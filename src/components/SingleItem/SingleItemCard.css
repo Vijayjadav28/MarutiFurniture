@@ -1,0 +1,66 @@
+.single-item{
+  display: flex;
+  
+}
+
+.single-image{
+  width: 60vh;
+  margin-bottom: 20px;
+  
+}
+
+.singleItem-image{
+
+  padding: 10px;
+  margin-left: 20px;
+}
+
+.context{
+  margin-left: 20vh;
+
+}
+.item-btn1{
+ 
+  margin: 0px 7vh;
+  background:rgb(244, 160, 2);
+   border: white;
+   padding: 10px 35px;
+    color: white ;
+  
+}
+.item-btn1:hover{
+  background-color:rgb(255, 173, 19) ;
+ 
+}
+
+.item-btn2{
+  
+  margin: 0px 4vh;
+  background:red;
+  border: white;
+   padding: 10px 30px;
+    color: white ;
+
+}
+.item-btn2:hover{
+  background-color:rgb(190, 13, 13); ;
+}
+.btns{
+
+  margin: 20px -40px;
+ 
+}
+
+@media (max-width:768px) {
+
+.single-item{
+  display: grid;
+}
+.context{
+  margin: 10px 50px;
+}
+  
+
+
+}
+

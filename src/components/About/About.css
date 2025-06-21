@@ -1,0 +1,62 @@
+
+.about-page {
+  width: 100%;
+  min-height: 100vh;
+  background: linear-gradient(to bottom right, #ffffff, #f0f4f7);
+  padding: 20px 0;
+}
+
+.about-container {
+  padding: 60px 5%;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: #2c3e50;
+  max-width: 1200px;
+  margin: 0 auto;
+  animation: fadeIn 1s ease-in-out;
+}
+
+.about-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.about-header h1 {
+  font-size: clamp(32px, 5vw, 42px); /* Responsive font size */
+  margin-bottom: 10px;
+  color: #28a745;
+  font-weight: bold;
+}
+
+.about-header p {
+  font-size: clamp(18px, 3vw, 20px);
+  color: #555;
+}
+
+.about-content {
+  display: grid;
+  gap: 25px;
+}
+
+.about-content p {
+  font-size: clamp(16px, 2vw, 18px);
+  line-height: 1.8;
+  color: #444;
+  margin: 0;
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .about-container {
+    padding: 40px 5%;
+  }
+  
+  .about-content {
+    gap: 20px;
+  }
+}

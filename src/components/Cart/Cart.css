@@ -1,0 +1,39 @@
+.cart-image{
+    width: 300px;
+}
+
+.btn1{
+ 
+  margin: 10px 2vh;
+  background:rgb(244, 160, 2);
+   border: white;
+   padding: 10px 35px;
+    color: white ;
+  
+}
+.btn1:hover{
+  background-color:rgb(255, 173, 19) ;
+ 
+}
+
+.btn2{
+  
+  margin: 0px 4vh;
+  background:red;
+  border: white;
+   padding: 10px 30px;
+    color: white ;
+
+}
+.btn2:hover{
+  background-color:rgb(190, 13, 13); ;
+}
+
+.cart-card{
+    display: flex;
+    border: 2px solid rgb(118, 69, 68);
+}
+
+.cart-info{
+    margin: 40px 50px;
+}
