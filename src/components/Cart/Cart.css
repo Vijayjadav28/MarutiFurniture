@@ -1,39 +1,31 @@
-.cart-image{
-    width: 300px;
+table {
+  border: 1px solid black;
 }
-
-.btn1{
- 
-  margin: 10px 2vh;
-  background:rgb(244, 160, 2);
-   border: white;
-   padding: 10px 35px;
-    color: white ;
-  
+th{
+  padding: 15px 30px;
 }
-.btn1:hover{
-  background-color:rgb(255, 173, 19) ;
- 
+td{
+  padding: 10px 30px;
+  border: 1px solid rgb(209, 201, 201);
 }
-
-.btn2{
-  
-  margin: 0px 4vh;
-  background:red;
-  border: white;
-   padding: 10px 30px;
-    color: white ;
+.qty{
+  padding: 10px 60px;
+}
+.cart-dlt{  
+  display: flex;
+  border: 1px solid black;
+  padding: 3px 7px;
 
 }
-.btn2:hover{
-  background-color:rgb(190, 13, 13); ;
+.cart-container{
+  margin-left: 40px;
+   animation: fadeIn 1s ease-in-out;
 }
 
-.cart-card{
-    display: flex;
-    border: 2px solid rgb(118, 69, 68);
-}
-
-.cart-info{
-    margin: 40px 50px;
+.cart-shop{
+  background-color: rgb(192, 77, 16);
+  border: none;
+  padding: 10px 10px;
+  color: white;
+  border-radius: 20px;
 }

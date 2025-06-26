@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import SingleItemPage from "../SingleItem/SingleItemCard";
 import "./Product.css";
 import {Navigate, useNavigate } from "react-router-dom";
@@ -12,7 +12,7 @@ const productList = [
     prodid:"S54",
     name: "Wooden Sofa",
     image: "sofa2.jpg",
-    price: "₹12,999",
+    price: "12,999",
     color:"soft blue"
   },
   {
@@ -20,7 +20,7 @@ const productList = [
       prodid:"T34",
     name: "Dining Table Set",
     image: "table2.jpg",
-    price: "₹18,499",
+    price: "18,499",
     color:"dark black"
   },
   {
@@ -28,7 +28,7 @@ const productList = [
       prodid:"B3",
     name: " Bed",
     image: "bed2.jpg",
-    price: "₹25,999",
+    price: "25,999",
     color:"soft white"
   },
   {
@@ -36,7 +36,7 @@ const productList = [
       prodid:"C22",
     name: "Office Chair",
     image: "chair3.jpg",
-    price: "₹4,999",
+    price: "4,999",
     color:"dark black"
   },
   {
@@ -44,7 +44,7 @@ const productList = [
       prodid:"S33",
     name: "Wooden Sofas",
     image: "sofa3.avif",
-    price: "₹15,999",
+    price: "15,999",
     color:"dark orange"
   },
   {
@@ -52,7 +52,7 @@ const productList = [
       prodid:"C44",
     name: "Wooden Chair",
     image: "chair2.avif",
-    price: "₹4,999",
+    price: "4,999",
     color:"pure white"
   },
   {
@@ -60,7 +60,7 @@ const productList = [
       prodid:"C44",
     name: "Bed",
     image: "bed1.avif",
-    price: "₹39,999",
+    price: "39,999",
     color:"light black"
   },
   {
@@ -68,16 +68,21 @@ const productList = [
       prodid:"B12",
     name: " Book Stand",
     image: "bookstand1.jpg",
-    price: "₹12,999",
+    price: "12,999",
     color:"black-can be modify"
   },
 ];
 
 function Product() {
   const navigate = useNavigate();
+  const [loading ,setLoading]=useState(true);
+  const[products,setProducts]=useState([]);
+
+  
   return (
     <div className="products-container">
       <h2>Our Products</h2>
+     
       <div className="product-grid">
         {productList.map((product) => (
           <div className="product-card" key={product.id} onClick={()=>navigate(`/products/${product.name}}`,{
@@ -86,18 +91,20 @@ function Product() {
             img:product.image,
             color:product.color,
             catid:product.prodid,
-            price:product.price
+            price:parseFloat(product.price.replace(/,/g,"")),
+
             }
           })} >
             <img src={product.image} alt={product.name} />
             <h3>{product.name}</h3>
-            <p className="price">{product.price}</p>
+            <p className="price">₹{product.price}</p>
           </div>
         ))}
       </div>
-    
+
     </div>
   );
 }
+
 
 export default Product;

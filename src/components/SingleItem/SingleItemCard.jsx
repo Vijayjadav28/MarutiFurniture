@@ -2,8 +2,9 @@ import React from "react";
 import { Navigate, useLocation, useNavigate, useParams } from "react-router-dom";
 import "./SingleItemCard.css";
 import { VscArrowRight } from "react-icons/vsc";
-import { collection,addDoc } from "firebase/firestore";
+import { collection,addDoc , getDocs, query, where, updateDoc, doc } from "firebase/firestore";
 import { db } from "../../libs/firebase";
+import Cart from "../Cart/Cart";
 
 const SingleItemPage = () => {
   const { name } = useParams();
@@ -11,18 +12,46 @@ const SingleItemPage = () => {
   const navigate=useNavigate();
 window.scroll(0,0)
 
+
 const handleAddToCart = async () => {
   try {
-    await addDoc(collection(db, "cart"), state); 
-    alert(`${state.name} added to  cart!`);
+    const cartRef = collection(db, "cart");
+
+ 
+    const q = query(cartRef, where("catid", "==", state.catid)); // you can replace "name" with a unique "id" field
+    const snapshot = await getDocs(q);
+
+    if (!snapshot.empty) {
+      // Item exists, update quantity
+      const existingDoc = snapshot.docs[0];
+      const existingData = existingDoc.data();
+      const newQty = (existingData.quantity || 1) + 1;
+
+      await updateDoc(doc(db, "cart", existingDoc.id), {
+        quantity: newQty,
+      });
+
+      alert(`${state.name} quantity updated in cart.`);
+    } else {
+      // Item not found, add new with quantity 1
+      await addDoc(cartRef, {
+        ...state,
+        quantity: 1,
+      });
+
+      alert(`${state.name} added to cart.`);
+    }
+
     navigate("/cart");
   } catch (error) {
     console.error("Error adding to cart:", error);
+    alert("Failed to add item. Please try again.");
   }
 };
+
  const handleBuyNow = () => {
     alert(`Buying ${state.name}...`);
-    // Optional: navigate("/checkout", { state: state });
+    
   };
 
   if (!state) {
@@ -43,7 +72,7 @@ const handleAddToCart = async () => {
 
       <div className="context">
         <h3>{state.name} ({state.catid} {state.color})</h3>
-        <h2>{state.price}</h2>
+        <h2>₹{(state.price).toLocaleString("en-IN")}</h2>
 
         <h4>Available Offers</h4>
         <p>

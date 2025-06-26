@@ -8,9 +8,9 @@ import { matchPath, useNavigate } from "react-router-dom";
 function Home() {
 
   const categories =[
-        { name: "Sofas",catid:"C10", img: "sofa_img.jpg" ,color:"Soft White" , price:"₹30,000"},
-        { name: "Beds",catid:"F12", img: "bed_img.webp" ,color:"Light Black", price:"₹45,000"},
-       { name: "Dining Tables",catid:"C11", img: "dining_table.jpg" ,color:"Light Wooden", price:"₹20,000"},
+        { name: "Sofas",catid:"C10", img: "sofa_img.jpg" ,color:"Soft White" , price:"30,000"},
+        { name: "Beds",catid:"F12", img: "bed_img.webp" ,color:"Light Black", price:"45,000"},
+       { name: "Dining Tables",catid:"C11", img: "dining_table.jpg" ,color:"Light Wooden", price:"20,000"},
   ]
   const navigate = useNavigate();
 
@@ -36,7 +36,7 @@ function Home() {
             img:cat.img,
             color:cat.color,
             catid:cat.catid,
-            price:cat.price
+            price:parseFloat(cat.price.replace(/,/g, ""))
           },
         })}>
               <img src={cat.img} alt={cat.name} />

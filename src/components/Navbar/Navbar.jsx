@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
+import { IoCartOutline } from "react-icons/io5";
 import './Navbar.css';
 
 const Navbar = () => {
@@ -37,6 +38,9 @@ const Navbar = () => {
           </NavLink>
           <NavLink to="/contact" onClick={() => setIsMenuOpen(false)}>
             Contact
+          </NavLink>
+          <NavLink to="/cart" onClick={() => setIsMenuOpen(false)}>
+            {<IoCartOutline />}
           </NavLink>
         </div>
 
