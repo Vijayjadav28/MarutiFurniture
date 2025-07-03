@@ -1,10 +1,6 @@
-
-import React, { useState, useEffect } from "react";
-import SingleItemPage from "../SingleItem/SingleItemCard";
+import React from "react";
+import { useNavigate } from "react-router-dom";
 import "./Product.css";
-import {Navigate, useNavigate } from "react-router-dom";
-
-
 
 const productList = [ 
   {
@@ -75,36 +71,35 @@ const productList = [
 
 function Product() {
   const navigate = useNavigate();
-  const [loading ,setLoading]=useState(true);
-  const[products,setProducts]=useState([]);
 
-  
   return (
     <div className="products-container">
-      <h2>Our Products</h2>
-     
+      <h2>Our <span>Products</span></h2>
       <div className="product-grid">
         {productList.map((product) => (
-          <div className="product-card" key={product.id} onClick={()=>navigate(`/products/${product.name}}`,{
-            state:{
-             name:product.name,
-            img:product.image,
-            color:product.color,
-            catid:product.prodid,
-            price:parseFloat(product.price.replace(/,/g,"")),
-
-            }
-          })} >
-            <img src={product.image} alt={product.name} />
-            <h3>{product.name}</h3>
-            <p className="price">₹{product.price}</p>
+          <div className="product-card" key={product.id} onClick={() =>
+            navigate(`/products/${product.name}`, {
+              state: {
+                name: product.name,
+                img: product.image,
+                color: product.color,
+                catid: product.prodid,
+                price: parseFloat(product.price.replace(/,/g, ""))
+              }
+            })}>
+            <div className="product-image-wrapper">
+              <img src={product.image} alt={product.name} />
+              <span className="color-badge">{product.color}</span>
+            </div>
+            <div className="product-details">
+              <h3>{product.name}</h3>
+              <p className="price">₹{product.price}</p>
+            </div>
           </div>
         ))}
       </div>
-
     </div>
   );
 }
-
 
 export default Product;

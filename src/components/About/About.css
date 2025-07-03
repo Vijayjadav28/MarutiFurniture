@@ -1,62 +1,131 @@
-
-.about-page {
-  width: 100%;
-  min-height: 100vh;
-  background: linear-gradient(to bottom right, #ffffff, #f0f4f7);
-  padding: 20px 0;
-}
-
 .about-container {
-  padding: 60px 5%;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  color: #2c3e50;
-  max-width: 1200px;
-  margin: 0 auto;
-  animation: fadeIn 1s ease-in-out;
+  margin: -18px auto;
+  
 }
 
 .about-header {
+ 
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background-color: #333;
+  height: 18rem;
+  color: white;
   text-align: center;
-  margin-bottom: 40px;
 }
 
 .about-header h1 {
-  font-size: clamp(32px, 5vw, 42px); /* Responsive font size */
-  margin-bottom: 10px;
+  font-size: 2.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.about-header span {
   color: #28a745;
-  font-weight: bold;
 }
 
 .about-header p {
-  font-size: clamp(18px, 3vw, 20px);
-  color: #555;
-}
-
-.about-content {
-  display: grid;
-  gap: 25px;
+  color: #ccc;
+  font-size: 1.1rem;
 }
 
 .about-content p {
-  font-size: clamp(16px, 2vw, 18px);
-  line-height: 1.8;
+  margin-bottom: 1rem;
   color: #444;
-  margin: 0;
+  font-size: 1rem;
+  line-height: 1.6;
 }
 
-/* Animation */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+.why-maruti {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 2rem;
+  background: #f8f9fa;
+  gap: 2rem;
+  justify-content: center;
 }
 
-/* Responsive adjustments */
+.why-title {
+  font-size: 2rem;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #111;
+  width: 100%;
+}
+
+.why-title span {
+  color: #28a745;
+}
+
+.feature-row {
+  margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  justify-content: center;
+  width: 100%;
+}
+
+.feature-card {
+  background: #fff;
+  padding: 1.5rem;
+  border: 1px solid #ddd;
+  width: 280px;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  border-radius: 8px;
+  transition: transform 0.2s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-15px);
+}
+
+.feature-icon {
+  font-size: 8rem;
+  color: #28a745;
+  margin-top: 5px;
+}
+
+.right {
+  margin-top: 6rem;
+}
+
+/* Responsive for tablets */
 @media (max-width: 768px) {
-  .about-container {
-    padding: 40px 5%;
+  .about-header {
+    height: auto;
+    padding: 2rem 1rem;
   }
-  
-  .about-content {
-    gap: 20px;
+
+  .about-header h1 {
+    font-size: 1.8rem;
+  }
+
+  .about-header p {
+    font-size: 1rem;
+  }
+
+  .feature-card {
+    width: 90%;
+    flex-direction: row;
+  }
+}
+
+/* Responsive for mobile */
+@media (max-width: 480px) {
+  .why-maruti {
+    padding: 1rem;
+  }
+
+  .feature-card {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .feature-icon {
+    font-size: 2.2rem;
   }
 }

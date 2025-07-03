@@ -30,7 +30,7 @@ const Navbar = () => {
           <NavLink to="/" exact="true" onClick={() => setIsMenuOpen(false)}>
             Home
           </NavLink>
-          <NavLink to="/products" onClick={() => setIsMenuOpen(false)}>
+          <NavLink to="/products" onClick={() => {setIsMenuOpen(false)}}>
             Products
           </NavLink>
           <NavLink to="/about" onClick={() => setIsMenuOpen(false)}>
