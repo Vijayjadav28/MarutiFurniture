@@ -171,8 +171,8 @@ function Home() {
               sofa is incredibly comfortable and looks even better in person!"
             </p>
             <div className="customer-info">
-              <h4 style={{ color: "#212121" }}>Rahul Sharma</h4>
-              <p style={{ color: "#6c757d" }}>Mumbai</p>
+              <h4 style={{ color: "#212121" }}>Milan bhardava</h4>
+              <p style={{ color: "#6c757d" }}>Rajkot</p>
             </div>
           </div>
           <div
@@ -191,8 +191,8 @@ function Home() {
               the centerpiece of our home now. Highly recommended!"
             </p>
             <div className="customer-info">
-              <h4 style={{ color: "#212121" }}>Priya Patel</h4>
-              <p style={{ color: "#6c757d" }}>Delhi</p>
+              <h4 style={{ color: "#212121" }}>Nimesh Bhuva</h4>
+              <p style={{ color: "#6c757d" }}>Madhavpur</p>
             </div>
           </div>
         </div>
