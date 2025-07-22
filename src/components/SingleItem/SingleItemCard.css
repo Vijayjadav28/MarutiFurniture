@@ -1,7 +1,7 @@
 
 .single-item-container {
   max-width: 1200px;
-  margin: 2rem auto;
+  margin: 5rem auto;
   padding: 0 1rem;
   animation: fadeIn 0.5s ease-in-out;
 }

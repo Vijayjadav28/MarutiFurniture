@@ -38,21 +38,29 @@ function Contact() {
   return (
     <div className="contact-page">
       {/* Contact Header */}
-      <div className="contact-header">
-        <h1>Get in Touch</h1>
-        <p>Have questions or feedback? We'd love to hear from you!</p>
-      </div>
+      <section className="contact-hero">
+        <div className="hero-content">
+          <h1>Get in Touch</h1>
+          <p>Have questions or feedback? We'd love to hear from you!</p>
+        </div>
+      </section>
 
-      <div className="contact-content">
+      <div className="contact-container">
         {/* Contact Form */}
-        <div className="contact-form-container">
-          <h2>Send Us a Message</h2>
+        <section className="contact-form-section">
+          <div className="form-header">
+            <h2>Send Us a Message</h2>
+            <p>Fill out the form and we'll respond within 24 hours</p>
+          </div>
+          
           <form onSubmit={handleSubmit} className="contact-form">
             <div className="form-group">
+              <label htmlFor="name">Full Name</label>
               <input
+                id="name"
                 type="text"
                 name="name"
-                placeholder="Your Name"
+                placeholder="Enter your name"
                 required
                 value={formData.name}
                 onChange={handleChange}
@@ -62,10 +70,12 @@ function Contact() {
             </div>
             
             <div className="form-group">
+              <label htmlFor="number">Phone Number</label>
               <input
+                id="number"
                 type="tel"
                 name="number"
-                placeholder="Phone Number"
+                placeholder="Enter your phone number"
                 required
                 value={formData.number}
                 onChange={handleChange}
@@ -75,10 +85,12 @@ function Contact() {
             </div>
             
             <div className="form-group">
+              <label htmlFor="email">Email Address</label>
               <input
+                id="email"
                 type="email"
                 name="email"
-                placeholder="Email Address"
+                placeholder="Enter your email"
                 required
                 value={formData.email}
                 onChange={handleChange}
@@ -88,13 +100,16 @@ function Contact() {
             </div>
             
             <div className="form-group">
+              <label htmlFor="message">Your Message</label>
               <textarea
+                id="message"
                 name="message"
-                placeholder="Your Message"
+                placeholder="How can we help you?"
                 required
                 value={formData.message}
                 onChange={handleChange}
                 className="form-textarea"
+                rows="5"
               ></textarea>
               <span className="input-highlight"></span>
             </div>
@@ -108,35 +123,58 @@ function Contact() {
               {isSubmitting ? "Sending..." : "Send Message"}
             </button>
           </form>
-        </div>
+        </section>
 
         {/* Contact Info */}
-        <div className="contact-info">
-          <h2>Our Contact Information</h2>
-          <div className="info-card">
-            <FaPhone className="info-icon" />
-            <div>
-              <h3>Phone</h3>
-              <p>+91 7284030968</p>
-            </div>
+        <aside className="contact-info-section">
+          <div className="info-header">
+            <h2>Our Contact Information</h2>
+            <p>Reach out to us through these channels</p>
           </div>
           
-          <div className="info-card">
-            <FaEnvelope className="info-icon" />
-            <div>
-              <h3>Email</h3>
-              <p>vijayjadav2863@gmail.com</p>
+          <div className="info-cards">
+            <div className="info-card">
+              <div className="icon-wrapper">
+                <FaPhone className="info-icon" />
+              </div>
+              <div className="info-content">
+                <h3>Phone</h3>
+                <p>+91 7284030968</p>
+                <a href="tel:+917284030968" className="contact-link">Call Now</a>
+              </div>
+            </div>
+            
+            <div className="info-card">
+              <div className="icon-wrapper">
+                <FaEnvelope className="info-icon" />
+              </div>
+              <div className="info-content">
+                <h3>Email</h3>
+                <p>vijayjadav2863@gmail.com</p>
+                <a href="mailto:vijayjadav2863@gmail.com" className="contact-link">Email Us</a>
+              </div>
+            </div>
+            
+            <div className="info-card">
+              <div className="icon-wrapper">
+                <FaMapMarkerAlt className="info-icon" />
+              </div>
+              <div className="info-content">
+                <h3>Address</h3>
+                <p>Maruti Furniture, Near Bus Station</p>
+                <p>Madhavpur Ghed, Porbandar</p>
+                <a 
+                  href="https://maps.app.goo.gl/kpcfXLsf3TcmB7cu5" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="contact-link"
+                >
+                  View on Map
+                </a>
+              </div>
             </div>
           </div>
-          
-          <div className="info-card">
-            <FaMapMarkerAlt className="info-icon" />
-            <div>
-              <h3>Address</h3>
-              <p>Maruti Furniture ,Near bus Station Madhavpur Ghed Porbandar</p>
-            </div>
-          </div>
-        </div>
+        </aside>
       </div>
     </div>
   );

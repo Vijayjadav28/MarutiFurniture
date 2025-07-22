@@ -1,20 +1,27 @@
-import React from "react";
+import React, { useState } from "react";
 import Product from "../Products/Product";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import "./SingleItemCard.css";
 import { VscArrowRight, VscStarFull, VscVerified } from "react-icons/vsc";
 import { FiTruck, FiShield, FiTag } from "react-icons/fi";
-import { collection, addDoc, getDocs, query, where, updateDoc, doc } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  getDocs,
+  query,
+  where,
+  updateDoc,
+  doc,
+} from "firebase/firestore";
 import { db } from "../../libs/firebase";
 
 const SingleItemCard = () => {
+  const [activeIndex, setActiveIndex] = useState(0);
   const { name } = useParams();
   const { state } = useLocation();
   const navigate = useNavigate();
-  
-  window.scroll(0, 0);
 
- 
+  window.scroll(0, 0);
 
   const handleAddToCart = async () => {
     try {
@@ -53,24 +60,32 @@ const SingleItemCard = () => {
   if (!state) {
     return <div className="error-message">No item data available</div>;
   }
-
+  console.log(activeIndex);
   return (
     <div className="single-item-container">
       <div className="single-item">
         <div className="product-gallery">
           <div className="main-image">
-           
-           <img src={`/${state.img}`} alt={state.name} />
+            <img src={`/${state.img[activeIndex]}`} />
           </div>
           <div className="thumbnail-container">
-            <div className="thumbnail active">
-             <img src={`/${state.img}`} alt={state.name} />
+            <div
+              onClick={() => setActiveIndex(0)}
+              className={activeIndex === 0 ? "thumbnail active" : "thumbnail"}
+            >
+              <img src={`/${state.img[0]}`} alt={state.name} />
             </div>
-            <div className="thumbnail">
-              <img src={`/${state.img}`} alt="Thumbnail 2" />
+            <div
+              onClick={() => setActiveIndex(1)}
+              className={activeIndex == 1 ? "thumbnail active" : "thumbnail"}
+            >
+              <img src={`/${state.img[1]}`} alt="Thumbnail 2" />
             </div>
-            <div className="thumbnail">
-             <img src={`/${state.img}`} alt={state.name} />
+            <div
+              onClick={() => setActiveIndex(2)}
+              className={activeIndex == 2 ? "thumbnail active" : "thumbnail"}
+            >
+              <img src={`/${state.img[2]}`} alt={state.name} />
             </div>
           </div>
         </div>
@@ -86,12 +101,16 @@ const SingleItemCard = () => {
             </div>
             <div className="price-section">
               <h2>₹{state.price.toLocaleString("en-IN")}</h2>
-              <span className="original-price">₹{Math.round(state.price * 1.2).toLocaleString("en-IN")}</span>
+              <span className="original-price">
+                ₹{Math.round(state.price * 1.2).toLocaleString("en-IN")}
+              </span>
               <span className="discount">20% OFF</span>
             </div>
             <div className="availability">
               <VscVerified className="verified-icon" />
-              <span>In Stock ({state.catid} {state.color})</span>
+              <span>
+                In Stock ({state.catid} {state.color})
+              </span>
             </div>
           </div>
 
@@ -107,7 +126,9 @@ const SingleItemCard = () => {
               <FiShield className="delivery-icon" />
               <div>
                 <p className="delivery-title">1 Year Warranty</p>
-                <p className="delivery-desc">Coverage for manufacturing defects</p>
+                <p className="delivery-desc">
+                  Coverage for manufacturing defects
+                </p>
               </div>
             </div>
           </div>
@@ -150,9 +171,10 @@ const SingleItemCard = () => {
       <div className="product-description">
         <h3>Product Description</h3>
         <p>
-          Premium quality {state.name} in {state.color} color. Crafted with attention to detail and 
-          built to last. This product combines elegant design with practical functionality to enhance 
-          your space. The durable materials ensure long-lasting performance while maintaining its 
+          Premium quality {state.name} in {state.color} color. Crafted with
+          attention to detail and built to last. This product combines elegant
+          design with practical functionality to enhance your space. The durable
+          materials ensure long-lasting performance while maintaining its
           aesthetic appeal.
         </p>
         <div className="specifications">
@@ -172,12 +194,13 @@ const SingleItemCard = () => {
             </div>
             <div className="spec-item">
               <span className="spec-title">Assembly</span>
-              <span className="spec-value">Professional assembly recommended</span>
+              <span className="spec-value">
+                Professional assembly recommended
+              </span>
             </div>
           </div>
         </div>
       </div>
-      
     </div>
   );
 };
