@@ -9,14 +9,14 @@ function Home() {
     {
       name: "Sofas",
       catid: "C10",
-      img: "sofa_img.jpg",
+      img: ["sofa_img.jpg", "sofa_img.jpg", "sofa_img.jpg"],
       color: "Soft White",
       price: "30,000",
     },
     {
       name: "Beds",
       catid: "F12",
-      img: "bed_img.webp",
+      img: ["bed_img.webp", "bed_img.webp", "bed_img.webp"],
       img2: "bed2.jpg",
       color: "Light Black",
       price: "45,000",
@@ -24,7 +24,7 @@ function Home() {
     {
       name: "Dining Tables",
       catid: "C11",
-      img: "dining_table.jpg",
+      img: ["dining_table.jpg", "dining_table.jpg", "dining_table.jpg"],
       color: "Light Wooden",
       price: "20,000",
     },
@@ -71,7 +71,7 @@ function Home() {
                 }
               >
                 <div className="category-image-container">
-                  <img src={cat.img} alt={cat.name} />
+                  <img src={cat.img[0]} alt={cat.name} />
                   <div className="price-tag">₹{cat.price}</div>
                 </div>
                 <div className="category-details">
@@ -99,7 +99,9 @@ function Home() {
           </div>
 
           <div className="about-content">
-            <h2>Welcome to <span>Maruti Furniture</span></h2>
+            <h2>
+              Welcome to <span>Maruti Furniture</span>
+            </h2>
             <p>
               We create furniture that combines timeless design with exceptional
               comfort. Each piece is crafted with attention to detail using only
@@ -107,10 +109,18 @@ function Home() {
             </p>
 
             <ul className="features-list">
-              <li><FiCheck /> <span>Handcrafted by skilled artisans</span></li>
-              <li><FiCheck /> <span>Premium quality materials</span></li>
-              <li><FiCheck /> <span>Customization options available</span></li>
-              <li><FiCheck /> <span>Free design consultation</span></li>
+              <li>
+                <FiCheck /> <span>Handcrafted by skilled artisans</span>
+              </li>
+              <li>
+                <FiCheck /> <span>Premium quality materials</span>
+              </li>
+              <li>
+                <FiCheck /> <span>Customization options available</span>
+              </li>
+              <li>
+                <FiCheck /> <span>Free design consultation</span>
+              </li>
             </ul>
 
             <button onClick={() => navigate("/products")}>
@@ -131,7 +141,11 @@ function Home() {
           <div className="testimonial-grid">
             <div className="testimonial-card">
               <div className="rating">
-                <FaStar /><FaStar /><FaStar /><FaStar /><FaStar />
+                <FaStar />
+                <FaStar />
+                <FaStar />
+                <FaStar />
+                <FaStar />
               </div>
               <p className="testimonial-text">
                 "The quality of Maruti Furniture exceeded my expectations. The
@@ -145,7 +159,11 @@ function Home() {
 
             <div className="testimonial-card">
               <div className="rating">
-                <FaStar /><FaStar /><FaStar /><FaStar /><FaStar />
+                <FaStar />
+                <FaStar />
+                <FaStar />
+                <FaStar />
+                <FaStar />
               </div>
               <p className="testimonial-text">
                 "Excellent craftsmanship and timely delivery. The dining table
@@ -165,7 +183,11 @@ function Home() {
         <div className="cta-content">
           <h2>Ready to Transform Your Space?</h2>
           <p>Visit our showroom to experience the quality firsthand</p>
-          <button onClick={() => window.open("https://maps.app.goo.gl/kpcfXLsf3TcmB7cu5", "_blank")}>
+          <button
+            onClick={() =>
+              window.open("https://maps.app.goo.gl/kpcfXLsf3TcmB7cu5", "_blank")
+            }
+          >
             Get Directions <FiMapPin />
           </button>
         </div>

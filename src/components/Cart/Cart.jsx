@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { collection, getDocs, deleteDoc, doc, updateDoc } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  deleteDoc,
+  doc,
+  updateDoc,
+} from "firebase/firestore";
 import { db } from "../../libs/firebase";
 import { IoCloseOutline } from "react-icons/io5";
 import { FiShoppingBag } from "react-icons/fi";
@@ -44,10 +50,10 @@ function Cart() {
 
   const handleQuantityChange = async (id, newQuantity) => {
     if (newQuantity < 1) return;
-    
+
     try {
       await updateDoc(doc(db, "cart", id), {
-        quantity: newQuantity
+        quantity: newQuantity,
       });
       fetchCart();
     } catch (error) {
@@ -56,7 +62,10 @@ function Cart() {
   };
 
   const calculateSubtotal = () => {
-    return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+    return cartItems.reduce(
+      (total, item) => total + item.price * item.quantity,
+      0
+    );
   };
 
   const calculateTotalItems = () => {
@@ -77,7 +86,10 @@ function Cart() {
           <h2>Your Shopping Cart</h2>
           <div className="cart-summary-mobile">
             {cartItems.length > 0 && (
-              <span>{calculateTotalItems()} {calculateTotalItems() === 1 ? 'item' : 'items'}</span>
+              <span>
+                {calculateTotalItems()}{" "}
+                {calculateTotalItems() === 1 ? "item" : "items"}
+              </span>
             )}
           </div>
         </div>
@@ -89,7 +101,10 @@ function Cart() {
             <FiShoppingBag className="empty-cart-icon" />
             <h3>Your cart is empty</h3>
             <p>Looks like you haven't added anything to your cart yet</p>
-            <button className="shop-now-btn" onClick={() => navigate("/products")}>
+            <button
+              className="shop-now-btn"
+              onClick={() => navigate("/products")}
+            >
               Shop Now
             </button>
           </div>
@@ -106,9 +121,14 @@ function Cart() {
 
               {cartItems.map((item) => (
                 <div className="cart-item" key={item.id}>
-                  <div className="product-info" onClick={() => navigate(`/products/${item.name}`, { state: item })}>
+                  <div
+                    className="product-info"
+                    onClick={() =>
+                      navigate(`/products/${item.name}`, { state: item })
+                    }
+                  >
                     <div className="product-image">
-                      <img src={`/${item.img}`} alt={item.name} />
+                      <img src={`/${item.img[0]}`} alt={item.name} />
                     </div>
                     <div className="product-details">
                       <h4>{item.name}</h4>
@@ -119,14 +139,20 @@ function Cart() {
                     ₹{item.price.toLocaleString("en-IN")}
                   </div>
                   <div className="product-quantity">
-                    <button 
-                      onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
+                    <button
+                      onClick={() =>
+                        handleQuantityChange(item.id, item.quantity - 1)
+                      }
                       disabled={item.quantity <= 1}
                     >
                       <AiOutlineMinus />
                     </button>
                     <span>{item.quantity}</span>
-                    <button onClick={() => handleQuantityChange(item.id, item.quantity + 1)}>
+                    <button
+                      onClick={() =>
+                        handleQuantityChange(item.id, item.quantity + 1)
+                      }
+                    >
                       <AiOutlinePlus />
                     </button>
                   </div>
@@ -145,7 +171,10 @@ function Cart() {
             <div className="cart-summary">
               <h3>Order Summary</h3>
               <div className="summary-row">
-                <span>Subtotal ({calculateTotalItems()} {calculateTotalItems() === 1 ? 'item' : 'items'})</span>
+                <span>
+                  Subtotal ({calculateTotalItems()}{" "}
+                  {calculateTotalItems() === 1 ? "item" : "items"})
+                </span>
                 <span>₹{calculateSubtotal().toLocaleString("en-IN")}</span>
               </div>
               <div className="summary-row">
@@ -160,12 +189,18 @@ function Cart() {
               </div>
               {calculateSubtotal() < 50000 && (
                 <div className="shipping-notice">
-                  Add ₹{(50000 - calculateSubtotal()).toLocaleString("en-IN")} more to get FREE shipping
+                  Add ₹{(50000 - calculateSubtotal()).toLocaleString("en-IN")}{" "}
+                  more to get FREE shipping
                 </div>
               )}
               <div className="summary-row total">
                 <span>Total</span>
-                <span>₹{(calculateSubtotal() + calculateShipping(calculateSubtotal())).toLocaleString("en-IN")}</span>
+                <span>
+                  ₹
+                  {(
+                    calculateSubtotal() + calculateShipping(calculateSubtotal())
+                  ).toLocaleString("en-IN")}
+                </span>
               </div>
               <button className="checkout-btn">Proceed to Checkout</button>
               <div className="payment-methods">
