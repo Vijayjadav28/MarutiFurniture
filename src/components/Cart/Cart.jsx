@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from "react";
 import {
   collection,
+  query,
+  where,
   getDocs,
   deleteDoc,
   doc,
   updateDoc,
 } from "firebase/firestore";
-import { db } from "../../libs/firebase";
+import { db, auth } from "../../libs/firebase";
+import { useAuth } from "../../Context/AuthContext";
 import { IoCloseOutline } from "react-icons/io5";
 import { FiShoppingBag } from "react-icons/fi";
 import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
@@ -18,15 +21,39 @@ function Cart() {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { currentUser } = useAuth();
+
+  const calculateTotalItems = () => {
+    return cartItems.reduce((total, item) => total + item.quantity, 0);
+  };
+
+  const calculateSubtotal = () => {
+    return cartItems.reduce(
+      (total, item) => total + item.price * item.quantity,
+      0
+    );
+  };
+
+  const calculateShipping = (subtotal) => {
+    return subtotal >= 50000 ? 0 : 5000;
+  };
 
   useEffect(() => {
     window.scroll(0, 0);
-    fetchCart();
-  }, []);
+    if (currentUser) {
+      fetchCart();
+    } else {
+      setLoading(false);
+    }
+  }, [currentUser]);
 
   const fetchCart = async () => {
     try {
-      const snapshot = await getDocs(collection(db, "cart"));
+      const q = query(
+        collection(db, "cart"),
+        where("userId", "==", currentUser.uid)
+      );
+      const snapshot = await getDocs(q);
       const items = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
@@ -50,7 +77,6 @@ function Cart() {
 
   const handleQuantityChange = async (id, newQuantity) => {
     if (newQuantity < 1) return;
-
     try {
       await updateDoc(doc(db, "cart", id), {
         quantity: newQuantity,
@@ -61,26 +87,11 @@ function Cart() {
     }
   };
 
-  const calculateSubtotal = () => {
-    return cartItems.reduce(
-      (total, item) => total + item.price * item.quantity,
-      0
-    );
-  };
-
-  const calculateTotalItems = () => {
-    return cartItems.reduce((total, item) => total + item.quantity, 0);
-  };
-
-  const calculateShipping = (subtotal) => {
-    return subtotal < 50000 ? 5000 : 0;
-  };
-
   return (
     <div className="cart-page">
       <div className="cart-container">
         <div className="cart-header">
-          <button className="back-button" onClick={() => navigate(-1)}>
+          <button className="back-button" onClick={() => navigate("/products")}>
             <BsArrowLeft /> Continue Shopping
           </button>
           <h2>Your Shopping Cart</h2>

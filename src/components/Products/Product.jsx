@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import "./Product.css";
+import {notifyproductaddded} from "../../Tostify/Tost"
 
 const productList = [
   {

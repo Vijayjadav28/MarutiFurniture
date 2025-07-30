@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import Product from "../Products/Product";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import "./SingleItemCard.css";
 import { VscArrowRight, VscStarFull, VscVerified } from "react-icons/vsc";
 import { FiTruck, FiShield, FiTag } from "react-icons/fi";
@@ -12,62 +11,89 @@ import {
   where,
   updateDoc,
   doc,
+  increment
 } from "firebase/firestore";
 import { db } from "../../libs/firebase";
+import { useAuth } from "../../Context/AuthContext";
+import { ToastContainer, toast } from "react-toastify";
+
+
 
 const SingleItemCard = () => {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const { name } = useParams();
-  const { state } = useLocation();
-  const navigate = useNavigate();
 
-  window.scroll(0, 0);
+
+    const loginToCartError = () => toast.error("Please Login To Add Product in Cart");
+  const { state } = useLocation();
+  const [activeIndex, setActiveIndex] = useState(0);
+  const navigate = useNavigate();
+  const { currentUser } = useAuth();
 
   const handleAddToCart = async () => {
+    if (!currentUser) {
+     loginToCartError();
+      return;
+    }
+
     try {
-      const cartRef = collection(db, "cart");
-      const q = query(cartRef, where("catid", "==", state.catid));
+     
+      const q = query(
+        collection(db, "cart"),
+        where("userId", "==", currentUser.uid),
+        where("name", "==", state.name)
+      );
+      
       const snapshot = await getDocs(q);
 
       if (!snapshot.empty) {
-        const existingDoc = snapshot.docs[0];
-        const existingData = existingDoc.data();
-        const newQty = (existingData.quantity || 1) + 1;
-
-        await updateDoc(doc(db, "cart", existingDoc.id), {
-          quantity: newQty,
+       
+        const docId = snapshot.docs[0].id;
+        await updateDoc(doc(db, "cart", docId), {
+          quantity: increment(1)
         });
-
-        alert(`${state.name} quantity updated in cart.`);
+        alert("Item quantity increased in your cart");
       } else {
-        await addDoc(cartRef, {
-          ...state,
+
+        await addDoc(collection(db, "cart"), {
+          userId: currentUser.uid,
+          productId: state.id || state.name, 
+          name: state.name,
+          price: state.price,
+          img: state.img,
+          catid: state.catid,
+          color: state.color,
           quantity: 1,
+          createdAt: new Date()
         });
-        alert(`${state.name} added to cart.`);
+        alert("Item added to your cart");
       }
-      navigate("/cart");
     } catch (error) {
       console.error("Error adding to cart:", error);
-      alert("Failed to add item. Please try again.");
+      alert("Failed to add item to cart");
     }
   };
 
   const handleBuyNow = () => {
+    if (!currentUser) {
+      navigate('/signin');
+      return;
+    }
     alert(`Buying ${state.name}...`);
+   
   };
 
   if (!state) {
     return <div className="error-message">No item data available</div>;
   }
-  console.log(activeIndex);
+
   return (
     <div className="single-item-container">
+      <ToastContainer/>
       <div className="single-item">
         <div className="product-gallery">
           <div className="main-image">
-            <img src={`/${state.img[activeIndex]}`} />
+            <img src={`/${state.img[activeIndex]}`} alt={state.name} />
           </div>
+        
           <div className="thumbnail-container">
             <div
               onClick={() => setActiveIndex(0)}
@@ -87,6 +113,8 @@ const SingleItemCard = () => {
             >
               <img src={`/${state.img[2]}`} alt={state.name} />
             </div>
+        
+      
           </div>
         </div>
 
