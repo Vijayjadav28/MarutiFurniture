@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Product.css";
-import {notifyproductaddded} from "../../Tostify/Tost"
+import { notifyproductaddded } from "../../Tostify/Tost";
 
 const productList = [
   {
@@ -76,9 +76,12 @@ const productList = [
   },
 ];
 
+
 function Product() {
   const navigate = useNavigate();
-
+useEffect(()=>{
+window.scrollTo(0,0)
+},[])
   return (
     <div className="products-container">
       <h2>

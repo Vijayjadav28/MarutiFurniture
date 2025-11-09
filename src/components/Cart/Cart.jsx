@@ -7,8 +7,9 @@ import {
   deleteDoc,
   doc,
   updateDoc,
+  addDoc,
 } from "firebase/firestore";
-import { db, auth } from "../../libs/firebase";
+import { db } from "../../libs/firebase";
 import { useAuth } from "../../Context/AuthContext";
 import { IoCloseOutline } from "react-icons/io5";
 import { FiShoppingBag } from "react-icons/fi";
@@ -84,6 +85,74 @@ function Cart() {
       fetchCart();
     } catch (error) {
       console.error("Error updating quantity:", error);
+    }
+  };
+
+  // 🔹 Cash on Delivery
+  const handleCOD = async () => {
+    try {
+      await addDoc(collection(db, "orders"), {
+        userId: currentUser.uid,
+        items: cartItems,
+        subtotal: calculateSubtotal(),
+        shipping: calculateShipping(calculateSubtotal()),
+        total:
+          calculateSubtotal() + calculateShipping(calculateSubtotal()),
+        paymentMethod: "Cash on Delivery",
+        status: "Pending",
+        createdAt: new Date(),
+      });
+      alert("Order placed successfully! Pay on delivery.");
+      navigate("/orders"); // optional
+    } catch (error) {
+      console.error("Error saving order:", error);
+    }
+  };
+
+  // 🔹 Online Payment with Razorpay
+  const handlePayment = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/create-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          amount:
+            calculateSubtotal() + calculateShipping(calculateSubtotal()),
+        }),
+      });
+
+      const order = await res.json();
+
+      const options = {
+        key: "YOUR_KEY_ID", // Replace with Razorpay key
+        amount: order.amount,
+        currency: "INR",
+        name: "Maruti Furniture",
+        description: "Furniture Purchase",
+        order_id: order.id,
+        handler: async function (response) {
+          await addDoc(collection(db, "payments"), {
+            userId: currentUser.uid,
+            items: cartItems,
+            amount: order.amount / 100,
+            paymentId: response.razorpay_payment_id,
+            status: "success",
+            createdAt: new Date(),
+          });
+          alert("Payment successful!");
+          navigate("/orders");
+        },
+        prefill: {
+          name: currentUser?.displayName || "Customer",
+          email: currentUser?.email || "test@example.com",
+        },
+        theme: { color: "#0d6efd" },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    } catch (error) {
+      console.error("Payment error:", error);
     }
   };
 
@@ -209,11 +278,26 @@ function Cart() {
                 <span>
                   ₹
                   {(
-                    calculateSubtotal() + calculateShipping(calculateSubtotal())
+                    calculateSubtotal() +
+                    calculateShipping(calculateSubtotal())
                   ).toLocaleString("en-IN")}
                 </span>
               </div>
-              <button className="checkout-btn">Proceed to Checkout</button>
+
+              {/* COD Button */}
+              <button className="checkout-btn" onClick={handleCOD}>
+                Place Order (Cash on Delivery)
+              </button>
+
+              {/* Online Payment Button */}
+              <button
+                className="checkout-btn"
+                style={{ backgroundColor: "#0d6efd", marginTop: "10px" }}
+                onClick={handlePayment}
+              >
+                Pay Online (Razorpay)
+              </button>
+
               <div className="payment-methods">
                 <p>We accept:</p>
                 <div className="payment-icons">

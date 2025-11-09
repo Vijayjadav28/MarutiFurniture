@@ -15,6 +15,7 @@ import Signin from "./components/Authentication/Signin/Signin";
 import Signup from "./components/Authentication/Signup/Signup";
 import ResetPassword from "./components/Authentication/ForgetPassword/ResetPassword";
 import Profile from "./components/Profile/Profile";
+import AdminPanel from "./components/Admin/AdminPanel";
 import './App.css'
 
 function App() {
@@ -34,6 +35,7 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/signin" element={<Signin />} />
           <Route path="/resetPassword" element={<ResetPassword />} />
+          <Route path="/admin" element={<AdminPanel />} />
           
           {/*Protected Route Profile */}
           <Route 

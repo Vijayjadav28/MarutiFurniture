@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import "./SingleItemCard.css";
 import { VscArrowRight, VscStarFull, VscVerified } from "react-icons/vsc";
@@ -22,6 +22,14 @@ import { ToastContainer, toast } from "react-toastify";
 const SingleItemCard = () => {
 
 
+
+  useEffect(() => {
+    window.scrollTo(0,0)
+  
+    
+  }, [])
+  
+window.scrollTo(0, 0);
     const loginToCartError = () => toast.error("Please Login To Add Product in Cart");
   const { state } = useLocation();
   const [activeIndex, setActiveIndex] = useState(0);
