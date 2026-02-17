@@ -1,106 +1,107 @@
 import React, { useState } from "react";
-import { v4 as uuidv4 } from "uuid";
 import "./Signup.css";
 import { auth, db } from "../../../libs/firebase";
 import { ToastContainer, toast } from "react-toastify";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { addDoc, collection } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
+ import { doc, setDoc } from "firebase/firestore";
 
 function Signup() {
   const navigate = useNavigate();
 
-   const notifySuccess = () => toast.success("Account Created Successfully!");
-  const notifyAlreadyEmail = () => toast.error("Email already exists");
-  const notifyFieldError = () => toast.warn("Please fill all the details");
-  const notifyError = () => toast.error("Something went wrong. Try again.");
-
-  const objStructure = {
-    ID: uuidv4(),
+  const [data, setData] = useState({
     username: "",
     email: "",
     password: "",
-  };
-
-  const [data, setData] = useState(objStructure);
+  });
 
   const handler = (e) => {
     const { name, value } = e.target;
-    setData((prevformdata) => ({ ...prevformdata, [name]: value }));
+    setData((prev) => ({ ...prev, [name]: value }));
   };
 
   const validate = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (data.email && data.password && data.username) {
-      try {
-      
-        const userCredential = await createUserWithEmailAndPassword(
-          auth,
-          data.email,
-          data.password
-        );
+  if (!data.username || !data.email || !data.password) {
+    toast.warn("Please fill all the details");
+    return;
+  }
 
-       
-        await addDoc(collection(db, "user"), {
-          ID: data.ID,
-          email: data.email,
-          username: data.username,
-          uid: userCredential.user.uid,
-        });
+  try {
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      data.email,
+      data.password
+    );
 
-        notifySuccess();
-        navigate("/signin");
-      } catch (err) {
-        console.error("Signup error:", err.message);
-        if (err.code === "auth/email-already-in-use") {
-          notifyAlreadyEmail();
-        } else if(err.code === "auth/weak-password") {
-         toast.warn("Password should be at least 6 characters.");
-        }
-      }
+
+
+await setDoc(
+  doc(db, "users", userCredential.user.uid),
+  {
+    username: data.username,
+    email: data.email,
+    uid: userCredential.user.uid,
+    createdAt: new Date(),
+  }
+);
+
+    toast.success("Account Created Successfully!");
+    navigate("/profile");
+
+  } catch (err) {
+    if (err.code === "auth/email-already-in-use") {
+      toast.error("Email already exists");
+    } else if (err.code === "auth/weak-password") {
+      toast.warn("Password should be at least 6 characters");
     } else {
-      notifyFieldError();
+      toast.error("Signup failed. Try again.");
     }
+  }
+
   };
 
   return (
     <div className="login-container">
       <div className="login-box">
         <h2>Signup</h2>
-        <ToastContainer />
+
 
         <form onSubmit={validate}>
           <div className="form-group">
-            <label htmlFor="email">Username</label>
+            <label>Username</label>
             <input
               type="text"
               name="username"
               placeholder="Username"
               onChange={handler}
+              required
             />
           </div>
+
           <div className="form-group">
-            <label htmlFor="email">Email</label>
+            <label>Email</label>
             <input
               type="email"
               name="email"
               placeholder="Email"
               onChange={handler}
+              required
             />
           </div>
 
           <div className="form-group">
-            <label htmlFor="password">Password</label>
+            <label>Password</label>
             <input
               type="password"
               name="password"
               placeholder="Password"
               onChange={handler}
+              required
             />
           </div>
-
-          
 
           <button type="submit" className="login-button">
             Signup
@@ -108,10 +109,15 @@ function Signup() {
         </form>
 
         <div className="links">
-          <a>
-            Already have an account? &nbsp;
-            <span style={{cursor:"pointer"}}onClick={() => navigate("/signin")}>Signin</span>
-          </a>
+          <p>
+            Already have an account?{" "}
+            <span
+              style={{ cursor: "pointer", color: "#0d6efd" }}
+              onClick={() => navigate("/signin")}
+            >
+              Signin
+            </span>
+          </p>
         </div>
       </div>
     </div>

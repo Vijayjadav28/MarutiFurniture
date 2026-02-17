@@ -208,7 +208,8 @@ function Cart() {
                     }
                   >
                     <div className="product-image">
-                      <img src={`/${item.img[0]}`} alt={item.name} />
+                   <img src={item.img[0]} alt={item.name} />
+
                     </div>
                     <div className="product-details">
                       <h4>{item.name}</h4>

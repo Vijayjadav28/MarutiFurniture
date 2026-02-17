@@ -1,0 +1,52 @@
+.admin-product-list {
+  padding: 2rem;
+  margin-top: 5rem;
+}
+
+.admin-product-list h2 {
+  margin-bottom: 1.5rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+}
+
+th,
+td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+}
+
+th {
+  background: #f5f7fa;
+  font-weight: 600;
+}
+
+td img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+.edit-btn {
+  background: #4a6fa5;
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 4px;
+}
+
+.delete-btn {
+  background: #d9534f;
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 4px;
+}

@@ -2,19 +2,17 @@ import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FiArrowRight, FiShoppingBag, FiMapPin, FiCheck } from "react-icons/fi";
 import { FaStar } from "react-icons/fa";
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer, toast } from "react-toastify";
 import { useLocation } from "react-router-dom";
-import "./Home.css"; 
+import "./Home.css";
 
 function Home() {
-
-const msg=useLocation();
+  const msg = useLocation();
 
   useEffect(() => {
     if (msg.state?.loginSuccess) {
       toast.success("Login successful!");
       window.history.replaceState({}, document.title);
-
     }
   }, [msg.state]);
 
@@ -43,12 +41,10 @@ const msg=useLocation();
     },
   ];
   const navigate = useNavigate();
-    
 
   return (
-
     <div className="home-container">
-<ToastContainer/>
+      <ToastContainer />
       {/* Hero Section */}
       <section className="hero-section">
         <div className="hero-content">

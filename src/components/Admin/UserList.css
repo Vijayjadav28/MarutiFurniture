@@ -1,0 +1,308 @@
+/* UserList.css - Modern Admin Dashboard Style */
+
+.admin-users {
+    margin-top: 4rem;
+  padding: 2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.admin-users h3 {
+  color: rgb(206, 28, 28);
+  font-size: 2.2rem;
+  font-weight: 600;
+  margin-bottom: 2rem;
+  text-align: center;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  position: relative;
+  padding-bottom: 1rem;
+}
+
+.admin-users h3::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 4px;
+  background: linear-gradient(to right, #4facfe, #00f2fe);
+  border-radius: 2px;
+}
+
+/* Table Container */
+.admin-users > div {
+  background: white;
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.95);
+  overflow: hidden;
+}
+
+/* Table Styling */
+.admin-users table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+  background: white;
+}
+
+/* Table Header */
+.admin-users thead {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.admin-users thead tr {
+  border-radius: 15px 15px 0 0;
+  overflow: hidden;
+}
+
+.admin-users th {
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+  padding: 1.2rem 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: none;
+  position: relative;
+}
+
+.admin-users th:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 20%;
+  height: 60%;
+  width: 1px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Table Body */
+.admin-users tbody tr {
+  transition: all 0.3s ease;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.admin-users tbody tr:hover {
+  background: linear-gradient(to right, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.admin-users tbody tr:nth-child(even) {
+  background-color: #f8f9fa;
+}
+
+.admin-users tbody tr:nth-child(even):hover {
+  background: linear-gradient(to right, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
+}
+
+.admin-users td {
+  padding: 1.2rem 1rem;
+  color: #333;
+  font-size: 0.95rem;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.admin-users td:first-child {
+  font-weight: bold;
+  color: #667eea;
+  text-align: center;
+}
+
+/* Role Badges */
+.admin-users td:last-child {
+  position: relative;
+}
+
+.admin-users td:last-child::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #4CAF50;
+}
+
+.admin-users td:last-child[data-role="admin"]::before {
+  background: #FF5722;
+}
+
+.admin-users td:last-child[data-role="moderator"]::before {
+  background: #2196F3;
+}
+
+.admin-users td:last-child {
+  font-weight: 600;
+  padding-left: 1.5rem;
+  text-transform: capitalize;
+}
+
+/* Status indicators based on role */
+.admin-users tr[data-role="admin"] td {
+  border-left: 4px solid #FF5722;
+}
+
+.admin-users tr[data-role="moderator"] td {
+  border-left: 4px solid #2196F3;
+}
+
+.admin-users tr[data-role="user"] td {
+  border-left: 4px solid #4CAF50;
+}
+
+/* No users message */
+.admin-users tbody:empty::after {
+  content: 'No users found';
+  display: block;
+  text-align: center;
+  padding: 3rem;
+  color: #666;
+  font-style: italic;
+}
+
+/* Loading animation */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.admin-users.loading tbody tr {
+  animation: shimmer 2s infinite linear;
+  background: linear-gradient(to right, #f6f7f8 8%, #edeef1 18%, #f6f7f8 33%);
+  background-size: 1000px 100%;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .admin-users {
+    padding: 1rem;
+  }
+  
+  .admin-users > div {
+    padding: 1rem;
+  }
+  
+  .admin-users table {
+    display: block;
+    overflow-x: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-users h3 {
+    font-size: 1.8rem;
+  }
+  
+  .admin-users th,
+  .admin-users td {
+    padding: 0.8rem;
+    font-size: 0.85rem;
+  }
+  
+  .admin-users th {
+    white-space: nowrap;
+  }
+}
+
+/* Add a subtle animation for table rows appearing */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.admin-users tbody tr {
+  animation: fadeInUp 0.5s ease forwards;
+  animation-delay: calc(var(--row-index) * 0.05s);
+  opacity: 0;
+}
+
+/* Custom scrollbar for table */
+.admin-users table::-webkit-scrollbar {
+  height: 8px;
+}
+
+.admin-users table::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.admin-users table::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 10px;
+}
+
+.admin-users table::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #5a6fd8 0%, #684795 100%);
+}
+
+
+/* Additional utility styles */
+.user-count-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  color: white;
+  padding: 0.3rem 1rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  margin-left: 1rem;
+  vertical-align: middle;
+}
+
+.refresh-button {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  color: white;
+  border: none;
+  padding: 0.6rem 1.5rem;
+  border-radius: 25px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: 1rem;
+}
+
+.refresh-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(79, 172, 254, 0.4);
+}
+
+.refresh-button:active {
+  transform: translateY(0);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #666;
+}
+
+.empty-state i {
+  font-size: 3rem;
+  color: #ddd;
+  margin-bottom: 1rem;
+  display: block;
+}

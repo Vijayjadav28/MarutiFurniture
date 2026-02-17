@@ -1,0 +1,92 @@
+.admin-dashboard {
+  padding: 40px 30px;
+  margin-top: 5rem;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa, #e4ecf5);
+}
+
+/* Header */
+.admin-header {
+  margin-bottom: 35px;
+}
+
+.admin-header h1 {
+  font-size: 30px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: #2c2c2c;
+}
+
+.admin-header p {
+  color: #666;
+  font-size: 15px;
+}
+
+/* Cards grid */
+.admin-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 25px;
+}
+
+/* Card */
+.admin-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 25px 20px;
+  cursor: pointer;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.admin-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent, rgba(74, 111, 165, 0.15));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.admin-card:hover::before {
+  opacity: 1;
+}
+
+.admin-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 16px 35px rgba(0, 0, 0, 0.15);
+}
+
+/* Icon */
+.admin-icon {
+  font-size: 34px;
+  color: #4a6fa5;
+  margin-bottom: 12px;
+}
+
+/* Text */
+.admin-card h3 {
+  margin-bottom: 6px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #222;
+}
+
+.admin-card p {
+  font-size: 14px;
+  color: #555;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .admin-dashboard {
+    padding: 30px 20px;
+  }
+
+  .admin-header h1 {
+    font-size: 24px;
+  }
+}

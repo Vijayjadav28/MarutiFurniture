@@ -1,94 +1,48 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { db } from "../../libs/firebase";
+import { collection, getDocs } from "firebase/firestore";
 import "./Product.css";
-import { notifyproductaddded } from "../../Tostify/Tost";
-
-const productList = [
-  {
-    id: 1,
-    prodid: "S54",
-    name: "Wooden Sofa",
-    image: ["sofa2.jpg", "table2.jpg", "bed2.jpg"],
-    price: "12,999",
-    color: "soft blue",
-  },
-  {
-    id: 2,
-    prodid: "T34",
-    name: "Dining Table Set",
-    image: ["table2.jpg", "table2.jpg", "table2.jpg", "table2.jpg"],
-    price: "18,499",
-    color: "dark black",
-  },
-  {
-    id: 3,
-    prodid: "B3",
-    name: " Bed",
-    image: ["bed2.jpg", "bed2.jpg", "bed2.jpg", "bed2.jpg"],
-    price: "25,999",
-    color: "soft white",
-  },
-  {
-    id: 4,
-    prodid: "C22",
-    name: "Office Chair",
-    image: ["chair3.jpg", "chair3.jpg", "chair3.jpg", "chair3.jpg"],
-    price: "4,999",
-    color: "dark black",
-  },
-  {
-    id: 5,
-    prodid: "S33",
-    name: "Wooden Sofas",
-    image: ["sofa3.avif", "sofa3.avif", "sofa3.avif", "sofa3.avif"],
-    price: "15,999",
-    color: "dark orange",
-  },
-  {
-    id: 6,
-    prodid: "C44",
-    name: "Wooden Chair",
-    image: ["chair2.avif", "chair2.avif", "chair2.avif", "chair2.avif"],
-    price: "4,999",
-    color: "pure white",
-  },
-  {
-    id: 7,
-    prodid: "C44",
-    name: "Bed",
-    image: ["bed1.avif", "bed1.avif", "bed1.avif", "bed1.avif"],
-    price: "39,999",
-    color: "light black",
-  },
-  {
-    id: 8,
-    prodid: "B12",
-    name: " Book Stand",
-    image: [
-      "bookstand1.jpg",
-      "bookstand1.jpg",
-      "bookstand1.jpg",
-      "bookstand1.jpg",
-    ],
-
-    price: "12,999",
-    color: "black-can be modify",
-  },
-];
-
 
 function Product() {
   const navigate = useNavigate();
-useEffect(()=>{
-window.scrollTo(0,0)
-},[])
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+
+    const fetchProducts = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "products"));
+        const productData = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+
+        setProducts(productData);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  if (loading) {
+    return <p style={{ textAlign: "center" }}>Loading products...</p>;
+  }
+
   return (
     <div className="products-container">
       <h2>
         Our <span>Products</span>
       </h2>
+
       <div className="product-grid">
-        {productList.map((product) => (
+        {products.map((product) => (
           <div
             className="product-card"
             key={product.id}
@@ -96,18 +50,22 @@ window.scrollTo(0,0)
               navigate(`/products/${product.name}`, {
                 state: {
                   name: product.name,
-                  img: product.image,
+                  img: product.images, //  Cloudinary URLs
                   color: product.color,
                   catid: product.prodid,
-                  price: parseFloat(product.price.replace(/,/g, "")),
+                  price: Number(product.price),
                 },
               })
             }
           >
             <div className="product-image-wrapper">
-              <img src={product.image[0]} alt={product.name} />
+              <img
+                src={product.images?.[0]} //  Cloudinary image
+                alt={product.name}
+              />
               <span className="color-badge">{product.color}</span>
             </div>
+
             <div className="product-details">
               <h3>{product.name}</h3>
               <p className="price">₹{product.price}</p>
