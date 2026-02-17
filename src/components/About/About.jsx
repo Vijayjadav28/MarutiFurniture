@@ -6,9 +6,6 @@ import { FaMoneyBillAlt, FaSyncAlt, FaTruck } from "react-icons/fa";
 import { BsBriefcaseFill } from "react-icons/bs";
 import { useEffect } from "react";
 
-
-
-
 function About() {
   useEffect(() => {
     window.scrollTo(0, 0);
