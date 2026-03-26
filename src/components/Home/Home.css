@@ -183,14 +183,13 @@
 }
 
 .hero-visual {
-  position: relative;
-  min-height: 34rem;
+  display: grid;
+  gap: 1rem;
 }
 
 .hero-image-card {
   position: relative;
-  height: 100%;
-  min-height: 34rem;
+  min-height: 31rem;
   border-radius: 2rem;
   overflow: hidden;
   box-shadow: 0 28px 60px rgba(19, 36, 24, 0.16);
@@ -200,6 +199,33 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.hero-image-badge {
+  position: absolute;
+  top: 1.25rem;
+  left: 1.25rem;
+  z-index: 1;
+  padding: 0.9rem 1rem;
+  border-radius: 1.2rem;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 18px 36px rgba(19, 36, 24, 0.12);
+}
+
+.hero-image-badge span {
+  display: block;
+  color: #5f7065;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.hero-image-badge strong {
+  display: block;
+  margin-top: 0.35rem;
+  color: #183122;
+  font-size: 1rem;
 }
 
 .hero-image-overlay {
@@ -228,17 +254,19 @@
   line-height: 1.1;
 }
 
-.hero-floating-card {
-  position: absolute;
+.hero-support-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.hero-support-card {
   border-radius: 1.35rem;
   padding: 1.15rem 1.2rem;
   backdrop-filter: blur(12px);
 }
 
 .hero-estimate-card {
-  left: -2rem;
-  bottom: 2rem;
-  max-width: 16rem;
   background: rgba(16, 28, 19, 0.86);
   color: #ffffff;
   box-shadow: 0 20px 40px rgba(14, 22, 16, 0.26);
@@ -269,12 +297,9 @@
 }
 
 .hero-quality-card {
-  right: -1.4rem;
-  top: 2rem;
   display: flex;
   align-items: center;
   gap: 0.9rem;
-  max-width: 18rem;
   background: rgba(255, 255, 255, 0.9);
   box-shadow: 0 18px 40px rgba(19, 36, 24, 0.12);
 }
@@ -645,11 +670,6 @@
     grid-template-columns: 1fr;
   }
 
-  .hero-visual {
-    min-height: auto;
-    padding-bottom: 7rem;
-  }
-
   .hero-image-card,
   .about-image-container,
   .cta-shell {
@@ -660,9 +680,8 @@
     min-height: 28rem;
   }
 
-  .hero-floating-card {
-    position: static;
-    margin-top: 1rem;
+  .hero-support-grid {
+    grid-template-columns: 1fr;
   }
 
   .about-image-container {

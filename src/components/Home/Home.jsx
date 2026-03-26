@@ -157,6 +157,10 @@ function Home() {
           <div className="hero-visual">
             <div className="hero-image-card">
               <img src="/shop.jpg" alt="Maruti Furniture showroom" />
+              <div className="hero-image-badge">
+                <span>Full-home planning</span>
+                <strong>{sampleEstimate.weekRange}</strong>
+              </div>
               <div className="hero-image-overlay">
                 <span>Rajkot design studio</span>
                 <h3>
@@ -166,24 +170,26 @@ function Home() {
               </div>
             </div>
 
-            <div className="hero-floating-card hero-estimate-card">
-              <span>New estimator</span>
-              <h4>40 x 30 ft family home</h4>
-              <p>
-                {formatCurrency(sampleEstimate.estimatedLow)} to{" "}
-                {formatCurrency(sampleEstimate.estimatedHigh)}
-              </p>
-              <small>Expected timeline: {sampleEstimate.weekRange}</small>
-            </div>
+            <div className="hero-support-grid">
+              <article className="hero-support-card hero-estimate-card">
+                <span>New estimator</span>
+                <h4>40 x 30 ft family home</h4>
+                <p>
+                  {formatCurrency(sampleEstimate.estimatedLow)} to{" "}
+                  {formatCurrency(sampleEstimate.estimatedHigh)}
+                </p>
+                <small>Expected timeline: {sampleEstimate.weekRange}</small>
+              </article>
 
-            <div className="hero-floating-card hero-quality-card">
-              <FiLayers />
-              <div>
-                <strong>Material-led planning</strong>
-                <span>
-                  Compare comfort, premium, and luxury finishes side by side.
-                </span>
-              </div>
+              <article className="hero-support-card hero-quality-card">
+                <FiLayers />
+                <div>
+                  <strong>Material-led planning</strong>
+                  <span>
+                    Compare comfort, premium, and luxury finishes side by side.
+                  </span>
+                </div>
+              </article>
             </div>
           </div>
         </div>

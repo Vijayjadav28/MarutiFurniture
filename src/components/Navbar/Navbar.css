@@ -22,7 +22,7 @@
 
 .navbar-container {
   position: relative;
-  width: min(1200px, calc(100% - 2rem));
+  width: min(1280px, calc(100% - 2rem));
   margin: 0 auto;
   display: flex;
   align-items: center;
@@ -39,6 +39,7 @@
 .logo {
   position: relative;
   z-index: 2;
+  flex: 0 0 auto;
   font-size: 1.85rem;
   font-weight: 700;
   font-family: "Cormorant Garamond", serif;
@@ -61,22 +62,25 @@
   z-index: 2;
   display: flex;
   align-items: center;
+  flex-wrap: nowrap;
   gap: 0.45rem;
 }
 
 .nav-links a {
   position: relative;
+  flex: 0 0 auto;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
   min-height: 2.9rem;
-  padding: 0.7rem 1rem;
+  padding: 0.68rem 0.92rem;
   border-radius: 999px;
   color: #415046;
   text-decoration: none;
   font-weight: 600;
-  font-size: 0.98rem;
+  font-size: 0.94rem;
+  white-space: nowrap;
   transition: background 0.25s ease, color 0.25s ease, transform 0.25s ease;
 }
 
@@ -92,15 +96,20 @@
 }
 
 .planner-tab {
+  color: #1f6d31;
+  background: rgba(40, 167, 69, 0.08);
+  border: 1px solid rgba(40, 167, 69, 0.14);
+}
+
+.planner-tab:hover {
+  color: #1f6d31;
+  background: rgba(40, 167, 69, 0.14);
+}
+
+.planner-tab.active {
   color: #ffffff;
   background: linear-gradient(135deg, #2fa74d, #1e7e34);
   box-shadow: 0 14px 24px rgba(35, 149, 65, 0.18);
-}
-
-.planner-tab:hover,
-.planner-tab.active {
-  color: #ffffff;
-  background: linear-gradient(135deg, #269745, #186a2d);
 }
 
 .nav-icon-link {
@@ -146,7 +155,7 @@
 }
 
 /* Responsive Design */
-@media (max-width: 920px) {
+@media (max-width: 1120px) {
   .navbar-container {
     width: min(100%, calc(100% - 1rem));
     padding: 0.85rem 1rem;
