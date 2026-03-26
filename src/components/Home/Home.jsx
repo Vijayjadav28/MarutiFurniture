@@ -21,22 +21,22 @@ const categories = [
   {
     name: "Sofas",
     catid: "C10",
-    img: ["sofa_img.jpg", "sofa_img.jpg", "sofa_img.jpg"],
+    img: ["/sofa_img.jpg", "/sofa2.jpg", "/sofa3.avif"],
     color: "Soft White",
     price: "30,000",
   },
   {
     name: "Beds",
     catid: "F12",
-    img: ["bed_img.webp", "bed_img.webp", "bed_img.webp"],
-    img2: "bed2.jpg",
+    img: ["/bed_img.webp", "/bed2.jpg", "/bed1.avif"],
+    img2: "/bed2.jpg",
     color: "Light Black",
     price: "45,000",
   },
   {
     name: "Dining Tables",
     catid: "C11",
-    img: ["dining_table.jpg", "dining_table.jpg", "dining_table.jpg"],
+    img: ["/dining_table.jpg", "/table2.jpg", "/dining_table.jpg"],
     color: "Light Wooden",
     price: "20,000",
   },
@@ -212,7 +212,7 @@ function Home() {
                 key={cat.catid}
                 className="category-card"
                 onClick={() =>
-                  navigate(`/products/${cat.name}`, {
+                  navigate(`/products/${encodeURIComponent(cat.name)}`, {
                     state: {
                       name: cat.name,
                       img: cat.img,

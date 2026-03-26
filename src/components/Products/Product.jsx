@@ -147,6 +147,7 @@ function Product() {
   const openProduct = (product) => {
     navigate(`/products/${encodeURIComponent(product.name)}`, {
       state: {
+        id: product.id,
         name: product.name,
         img: product.images,
         color: product.color,

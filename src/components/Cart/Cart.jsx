@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   collection,
   query,
@@ -39,17 +39,14 @@ function Cart() {
     return subtotal >= 50000 ? 0 : 5000;
   };
 
-  useEffect(() => {
-    window.scroll(0, 0);
-    if (currentUser) {
-      fetchCart();
-    } else {
-      setLoading(false);
-    }
-  }, [currentUser]);
-
-  const fetchCart = async () => {
+  const fetchCart = useCallback(async () => {
     try {
+      if (!currentUser) {
+        setCartItems([]);
+        setLoading(false);
+        return;
+      }
+
       const q = query(
         collection(db, "cart"),
         where("userId", "==", currentUser.uid)
@@ -65,7 +62,12 @@ function Cart() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentUser]);
+
+  useEffect(() => {
+    window.scroll(0, 0);
+    fetchCart();
+  }, [fetchCart]);
 
   const handleRemove = async (id) => {
     try {
@@ -204,7 +206,9 @@ function Cart() {
                   <div
                     className="product-info"
                     onClick={() =>
-                      navigate(`/products/${item.name}`, { state: item })
+                      navigate(`/products/${encodeURIComponent(item.name)}`, {
+                        state: item,
+                      })
                     }
                   >
                     <div className="product-image">

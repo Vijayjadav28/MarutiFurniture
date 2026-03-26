@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import "./SingleItemCard.css";
 import { VscArrowRight, VscStarFull, VscVerified } from "react-icons/vsc";
 import { FiTruck, FiShield, FiTag } from "react-icons/fi";
@@ -16,20 +16,155 @@ import {
 import { db } from "../../libs/firebase";
 import { useAuth } from "../../Context/AuthContext";
 import { ToastContainer, toast } from "react-toastify";
+import { parseProductPrice } from "../../utils/productUtils";
+
+const FEATURED_HOME_ITEMS = {
+  Sofas: {
+    name: "Sofas",
+    img: ["/sofa_img.jpg", "/sofa2.jpg", "/sofa3.avif"],
+    color: "Soft White",
+    catid: "C10",
+    price: 30000,
+  },
+  Beds: {
+    name: "Beds",
+    img: ["/bed_img.webp", "/bed2.jpg", "/bed1.avif"],
+    color: "Light Black",
+    catid: "F12",
+    price: 45000,
+  },
+  "Dining Tables": {
+    name: "Dining Tables",
+    img: ["/dining_table.jpg", "/table2.jpg", "/dining_table.jpg"],
+    color: "Light Wooden",
+    catid: "C11",
+    price: 20000,
+  },
+};
+
+function normalizeImageSource(src) {
+  if (!src) return null;
+  if (/^(https?:|data:|blob:|\/)/i.test(src)) return src;
+  return `/${String(src).replace(/^\.?\//, "")}`;
+}
+
+function normalizeItemData(item) {
+  if (!item) return null;
+
+  const rawImages = Array.isArray(item.img)
+    ? item.img
+    : Array.isArray(item.images)
+    ? item.images
+    : item.img || item.images
+    ? [item.img || item.images]
+    : [];
+
+  return {
+    id: item.id || item.productId || item.name,
+    name: item.name || "Product",
+    img: rawImages.map(normalizeImageSource).filter(Boolean),
+    color: item.color || "N/A",
+    catid: item.catid || item.prodid || item.category || "N/A",
+    price: parseProductPrice(item.price),
+  };
+}
 
 const SingleItemCard = () => {
   const { state } = useLocation();
+  const { itemName } = useParams();
   const navigate = useNavigate();
   const { currentUser } = useAuth();
-  
+  const decodedItemName = decodeURIComponent(itemName || "");
 
   const [activeIndex, setActiveIndex] = useState(0);
+  const [resolvedItem, setResolvedItem] = useState(() =>
+    normalizeItemData(state)
+  );
+  const [loadingItem, setLoadingItem] = useState(!state);
   const [imageError, setImageError] = useState({});
 
   const loginToCartError = () =>
     toast.error("Please Login To Add Product in Cart");
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  useEffect(() => {
+    let ignore = false;
+    const stateItem = normalizeItemData(state);
+
+    setActiveIndex(0);
+    setImageError({});
+
+    if (stateItem?.name) {
+      setResolvedItem(stateItem);
+      setLoadingItem(false);
+      return () => {
+        ignore = true;
+      };
+    }
+
+    const featuredFallback = FEATURED_HOME_ITEMS[decodedItemName];
+    if (featuredFallback) {
+      setResolvedItem(normalizeItemData(featuredFallback));
+      setLoadingItem(false);
+      return () => {
+        ignore = true;
+      };
+    }
+
+    if (!decodedItemName) {
+      setResolvedItem(null);
+      setLoadingItem(false);
+      return () => {
+        ignore = true;
+      };
+    }
+
+    const fetchProduct = async () => {
+      setLoadingItem(true);
+      try {
+        const productsQuery = query(
+          collection(db, "products"),
+          where("name", "==", decodedItemName)
+        );
+        const snapshot = await getDocs(productsQuery);
+
+        if (ignore) return;
+
+        if (!snapshot.empty) {
+          const productDoc = snapshot.docs[0];
+          setResolvedItem(
+            normalizeItemData({ id: productDoc.id, ...productDoc.data() })
+          );
+        } else {
+          setResolvedItem(null);
+        }
+      } catch (error) {
+        console.error("Error fetching product details:", error);
+        if (!ignore) {
+          setResolvedItem(null);
+        }
+      } finally {
+        if (!ignore) {
+          setLoadingItem(false);
+        }
+      }
+    };
+
+    fetchProduct();
+
+    return () => {
+      ignore = true;
+    };
+  }, [decodedItemName, state]);
+
+  const item = resolvedItem;
+
   const handleAddToCart = async () => {
+    if (!item) return;
+
     if (!currentUser) {
       loginToCartError();
       return;
@@ -39,7 +174,7 @@ const SingleItemCard = () => {
       const q = query(
         collection(db, "cart"),
         where("userId", "==", currentUser.uid),
-        where("name", "==", state.name)
+        where("name", "==", item.name)
       );
 
       const snapshot = await getDocs(q);
@@ -53,12 +188,12 @@ const SingleItemCard = () => {
       } else {
         await addDoc(collection(db, "cart"), {
           userId: currentUser.uid,
-          productId: state.id || state.name,
-          name: state.name,
-          price: state.price,
-          img: state.img,
-          catid: state.catid,
-          color: state.color,
+          productId: item.id || item.name,
+          name: item.name,
+          price: item.price,
+          img: item.img,
+          catid: item.catid,
+          color: item.color,
           quantity: 1,
           createdAt: new Date(),
         });
@@ -71,24 +206,37 @@ const SingleItemCard = () => {
   };
 
   const handleBuyNow = () => {
+    if (!item) return;
+
     if (!currentUser) {
       navigate("/signin");
       return;
     }
-    alert(`Buying ${state.name}...`);
+    alert(`Buying ${item.name}...`);
   };
 
   const handleImageError = (index) => {
-    console.error(`Image ${index} failed to load:`, state?.img?.[index]);
+    console.error(`Image ${index} failed to load:`, item?.img?.[index]);
     setImageError(prev => ({ ...prev, [index]: true }));
   };
 
-  if (!state) {
-    return <div className="error-message">No item data available</div>;
+  if (loadingItem) {
+    return <div className="error-message">Loading product details...</div>;
+  }
+
+  if (!item) {
+    return (
+      <div className="error-message">
+        Product details not available.
+        <button type="button" onClick={() => navigate("/products")}>
+          Back to Products
+        </button>
+      </div>
+    );
   }
 
   // Get images array or default to empty
-  const images = state.img || [];
+  const images = item.img || [];
   
   // Ensure we have at least 3 placeholders if images are missing
   const displayImages = [...images];
@@ -105,10 +253,10 @@ const SingleItemCard = () => {
         <div className="product-gallery">
           {/* Main Image */}
           <div className="main-image">
-            {images[activeIndex] ? (
+            {images[activeIndex] && !imageError[activeIndex] ? (
               <img 
                 src={images[activeIndex]} 
-                alt={state.name}
+                alt={item.name}
                 onError={() => handleImageError(activeIndex)}
               />
             ) : (
@@ -129,15 +277,19 @@ const SingleItemCard = () => {
                   }
                 }}
                 className={
-                  activeIndex === index && image
+                  activeIndex === index && image && !imageError[index]
                     ? "thumbnail active"
-                    : !image
+                    : !image || imageError[index]
                     ? "thumbnail disabled"
                     : "thumbnail"
                 }
-                title={!image ? "No image available" : `View image ${index + 1}`}
+                title={
+                  !image || imageError[index]
+                    ? "No image available"
+                    : `View image ${index + 1}`
+                }
               >
-                {image ? (
+                {image && !imageError[index] ? (
                   <img 
                     src={image} 
                     alt={`Thumbnail ${index + 1}`}
@@ -156,19 +308,19 @@ const SingleItemCard = () => {
         {/* 📄 PRODUCT DETAILS (same as before) */}
         <div className="product-details">
           <div className="product-header">
-            <h1>{state.name}</h1>
+            <h1>{item.name}</h1>
 
             <div className="rating">
               {[...Array(5)].map((_, i) => (
                 <VscStarFull key={i} className="star" />
               ))}
-              <span>(24 reviews)</span>a
+              <span>(24 reviews)</span>
             </div>
 
             <div className="price-section">
-              <h2>₹{state.price?.toLocaleString("en-IN") || "0"}</h2>
+              <h2>₹{item.price?.toLocaleString("en-IN") || "0"}</h2>
               <span className="original-price">
-                ₹{Math.round((state.price || 0) * 1.2).toLocaleString("en-IN")}
+                ₹{Math.round((item.price || 0) * 1.2).toLocaleString("en-IN")}
               </span>
               <span className="discount">20% OFF</span>
             </div>
@@ -176,7 +328,7 @@ const SingleItemCard = () => {
             <div className="availability">
               <VscVerified className="verified-icon" />
               <span>
-                In Stock ({state.catid || "N/A"} · {state.color || "N/A"})
+                In Stock ({item.catid || "N/A"} · {item.color || "N/A"})
               </span>
             </div>
           </div>
@@ -243,7 +395,7 @@ const SingleItemCard = () => {
       <div className="product-description">
         <h3>Product Description</h3>
         <p>
-          Premium quality {state.name} in {state.color} color. Crafted with
+          Premium quality {item.name} in {item.color} color. Crafted with
           attention to detail and built to last. This product combines elegant
           design with practical functionality to enhance your space.
         </p>
