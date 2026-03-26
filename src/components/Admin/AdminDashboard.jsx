@@ -54,7 +54,7 @@ function AdminDashboard() {
 
         <div
           className="admin-card"
-          onClick={() => navigate("/admin/orders")}
+          onClick={() => navigate("/profile/admin/orders")}
         >
           <RiShoppingBag3Fill className="admin-icon" />
           <h3>Orders</h3>

@@ -21,6 +21,8 @@ import AddProduct from "./components/Admin/AddProduct";
 import AdminProductList from "./components/Admin/AdminProductList";
 import EditProduct from "./components/Admin/EditProduct";
 import Estimator from "./components/Estimator/Estimator";
+import OrdersPage from "./components/Orders/OrdersPage";
+import AdminOrders from "./components/Admin/AdminOrders";
 
 import "./App.css";
 
@@ -47,6 +49,15 @@ function App() {
           <Route path="profile/admin/userlist" element={<UserList />} />
           <Route path="/profile/admin/products" element={<AdminProductList />} />
           <Route path="/profile/admin/edit-product/:id" element={<EditProduct />} />
+          <Route path="/profile/admin/orders" element={<AdminOrders />} />
+          <Route
+            path="/orders"
+            element={
+              <ProtectedRoute>
+                <OrdersPage />
+              </ProtectedRoute>
+            }
+          />
 
           {/*Protected Route Profile */}
           <Route

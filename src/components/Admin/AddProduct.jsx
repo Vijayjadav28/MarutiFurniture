@@ -12,10 +12,10 @@ function AddProduct() {
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (user) => {
-      if (!user) navigate("/admin-login");
+      if (!user) navigate("/profile/admin");
     });
     return () => unsub();
-  }, []);
+  }, [navigate]);
 
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");

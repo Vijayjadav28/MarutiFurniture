@@ -17,6 +17,7 @@ import { db } from "../../libs/firebase";
 import { useAuth } from "../../Context/AuthContext";
 import { ToastContainer, toast } from "react-toastify";
 import { parseProductPrice } from "../../utils/productUtils";
+import CheckoutModal from "../Orders/CheckoutModal";
 
 const FEATURED_HOME_ITEMS = {
   Sofas: {
@@ -82,9 +83,12 @@ const SingleItemCard = () => {
   );
   const [loadingItem, setLoadingItem] = useState(!state);
   const [imageError, setImageError] = useState({});
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
 
   const loginToCartError = () =>
     toast.error("Please Login To Add Product in Cart");
+  const loginToOrderError = () =>
+    toast.error("Please Login To Place Your Order");
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -209,10 +213,12 @@ const SingleItemCard = () => {
     if (!item) return;
 
     if (!currentUser) {
+      loginToOrderError();
       navigate("/signin");
       return;
     }
-    alert(`Buying ${item.name}...`);
+
+    setCheckoutOpen(true);
   };
 
   const handleImageError = (index) => {
@@ -357,7 +363,7 @@ const SingleItemCard = () => {
           {/* 🛒 ACTIONS */}
           <div className="product-actions">
             <button className="buy-now-btn" onClick={handleBuyNow}>
-              Buy Now
+              Order Now
             </button>
             <button className="add-to-cart-btn" onClick={handleAddToCart}>
               Add to Cart
@@ -400,6 +406,13 @@ const SingleItemCard = () => {
           design with practical functionality to enhance your space.
         </p>
       </div>
+
+      <CheckoutModal
+        isOpen={checkoutOpen}
+        item={item}
+        currentUser={currentUser}
+        onClose={() => setCheckoutOpen(false)}
+      />
     </div>
   );
 };

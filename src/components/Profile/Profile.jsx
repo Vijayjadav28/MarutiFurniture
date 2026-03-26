@@ -121,7 +121,7 @@ function Profile() {
       await auth.signOut();
       localStorage.removeItem("isAdmin");
       navigate("/signin");
-    } catch (error) {
+    } catch {
       toast.error("Failed to log out");
     }
   };
@@ -252,6 +252,14 @@ function Profile() {
               onClick={() => setEditMode(true)}
             >
               Edit Profile
+            </button>
+
+            <button
+              className="edit-btn"
+              style={{ background: "#15301f" }}
+              onClick={() => navigate("/orders")}
+            >
+              My Orders
             </button>
 
             {isAdmin && (

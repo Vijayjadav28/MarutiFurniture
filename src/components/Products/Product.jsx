@@ -137,6 +137,20 @@ function Product() {
     return sorted;
   }, [products, searchQuery, category, priceRange, sortBy]);
 
+  const groupedProducts = useMemo(() => {
+    return filteredSorted.reduce((groups, product) => {
+      const groupKey = product._category || "Other";
+      if (!groups[groupKey]) {
+        groups[groupKey] = [];
+      }
+      groups[groupKey].push(product);
+      return groups;
+    }, {});
+  }, [filteredSorted]);
+
+  const showSectionView =
+    category === "all" && priceRange === "all" && !searchQuery.trim();
+
   const clearFilters = () => {
     setSearchQuery("");
     setCategory("all");
@@ -152,10 +166,50 @@ function Product() {
         img: product.images,
         color: product.color,
         catid: product.prodid,
+        category: product._category,
         price: parseProductPrice(product.price),
       },
     });
   };
+
+  const renderProductCard = (product) => (
+    <article
+      className="product-card"
+      key={product.id}
+      onClick={() => openProduct(product)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          openProduct(product);
+        }
+      }}
+      role="button"
+      tabIndex={0}
+      aria-label={`View ${product.name}`}
+    >
+      <div className="product-image-wrapper">
+        <img
+          src={product.images?.[0]}
+          alt={product.name || "Product"}
+          onError={(e) => {
+            e.target.src =
+              "https://placehold.co/600x400/f4f4f5/71717a?text=No+image";
+          }}
+        />
+        <span className="product-card__category">{product._category}</span>
+        {product.color ? (
+          <span className="color-badge">{product.color}</span>
+        ) : null}
+      </div>
+
+      <div className="product-details">
+        <h3>{product.name}</h3>
+        <p className="price">
+          ₹{parseProductPrice(product.price).toLocaleString("en-IN")}
+        </p>
+      </div>
+    </article>
+  );
 
   if (loading) {
     return (
@@ -276,46 +330,37 @@ function Product() {
               Clear all filters
             </button>
           </div>
+        ) : showSectionView ? (
+          <div className="products-sections">
+            {PRODUCT_CATEGORIES.filter((categoryName) => groupedProducts[categoryName]?.length)
+              .map((categoryName) => (
+                <section key={categoryName} className="products-section">
+                  <div className="products-section__head">
+                    <div>
+                      <p className="products-section__eyebrow">Section-wise browse</p>
+                      <h2>{categoryName}</h2>
+                    </div>
+
+                    <button
+                      type="button"
+                      className="products-section__cta"
+                      onClick={() => setCategory(categoryName)}
+                    >
+                      View only {categoryName}
+                    </button>
+                  </div>
+
+                  <div className="product-grid">
+                    {groupedProducts[categoryName].map((product) =>
+                      renderProductCard(product)
+                    )}
+                  </div>
+                </section>
+              ))}
+          </div>
         ) : (
           <div className="product-grid">
-            {filteredSorted.map((product) => (
-              <article
-                className="product-card"
-                key={product.id}
-                onClick={() => openProduct(product)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    openProduct(product);
-                  }
-                }}
-                role="button"
-                tabIndex={0}
-                aria-label={`View ${product.name}`}
-              >
-                <div className="product-image-wrapper">
-                  <img
-                    src={product.images?.[0]}
-                    alt={product.name || "Product"}
-                    onError={(e) => {
-                      e.target.src =
-                        "https://placehold.co/600x400/f4f4f5/71717a?text=No+image";
-                    }}
-                  />
-                  <span className="product-card__category">
-                    {product._category}
-                  </span>
-                  {product.color ? (
-                    <span className="color-badge">{product.color}</span>
-                  ) : null}
-                </div>
-
-                <div className="product-details">
-                  <h3>{product.name}</h3>
-                  <p className="price">₹{parseProductPrice(product.price).toLocaleString("en-IN")}</p>
-                </div>
-              </article>
-            ))}
+            {filteredSorted.map((product) => renderProductCard(product))}
           </div>
         )}
       </div>

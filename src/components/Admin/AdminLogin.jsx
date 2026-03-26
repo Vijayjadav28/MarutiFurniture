@@ -30,7 +30,7 @@ function AdminLogin() {
         return;
       }
     
-      navigate("profile/admin/admindashboard");
+      navigate("/profile/admin/admindashboard");
     } catch (error) {
       alert(error.message);
     }
