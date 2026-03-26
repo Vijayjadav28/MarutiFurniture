@@ -1,0 +1,649 @@
+.estimator-page {
+  padding: 8.5rem 0 0;
+  background:
+    radial-gradient(circle at top left, rgba(91, 155, 105, 0.18), transparent 32%),
+    linear-gradient(180deg, #f7fbf7 0%, #ffffff 30%, #f4f9f5 100%);
+}
+
+.estimator-hero,
+.estimator-workbench,
+.estimator-detail-grid,
+.estimator-notes {
+  width: min(1180px, calc(100% - 2rem));
+  margin: 0 auto;
+}
+
+.estimator-hero {
+  margin-bottom: 2rem;
+}
+
+.estimator-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+  gap: 1.5rem;
+  align-items: stretch;
+}
+
+.estimator-copy,
+.estimator-intro-card,
+.estimator-panel,
+.detail-card,
+.note-card {
+  border: 1px solid rgba(39, 92, 54, 0.12);
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 24px 60px rgba(28, 57, 38, 0.1);
+}
+
+.estimator-copy {
+  padding: clamp(2rem, 4vw, 3.4rem);
+  border-radius: 2rem;
+}
+
+.estimator-eyebrow,
+.panel-heading span {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: 0.5rem 0.9rem;
+  border-radius: 999px;
+  background: rgba(40, 167, 69, 0.1);
+  color: var(--mf-green-dark);
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.estimator-copy h1,
+.panel-heading h2,
+.note-card h2,
+.estimator-intro-card h2 {
+  font-family: "Cormorant Garamond", serif;
+  color: #142119;
+  line-height: 0.95;
+}
+
+.estimator-copy h1 {
+  margin: 1.2rem 0 1rem;
+  font-size: clamp(3rem, 5vw, 4.8rem);
+}
+
+.estimator-copy p,
+.panel-heading p {
+  margin: 0;
+  color: #4c5d52;
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+.estimator-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-top: 1.5rem;
+}
+
+.estimator-badges span,
+.project-tags span {
+  padding: 0.7rem 1rem;
+  border-radius: 999px;
+  background: #f4f8f4;
+  border: 1px solid rgba(39, 92, 54, 0.12);
+  color: #294432;
+  font-weight: 600;
+}
+
+.estimator-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.estimator-summary-card {
+  display: flex;
+  gap: 0.9rem;
+  padding: 1.2rem;
+  border-radius: 1.4rem;
+  background: linear-gradient(180deg, #ffffff 0%, #f6faf6 100%);
+  border: 1px solid rgba(39, 92, 54, 0.1);
+}
+
+.summary-card-icon {
+  flex-shrink: 0;
+  width: 2.8rem;
+  height: 2.8rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 1rem;
+  background: rgba(40, 167, 69, 0.12);
+  color: var(--mf-green-dark);
+  font-size: 1.25rem;
+}
+
+.estimator-summary-card p,
+.result-stat-card p,
+.breakdown-header span,
+.milestone-content span,
+.intro-metrics p {
+  margin: 0;
+  color: #6c7a70;
+  font-size: 0.92rem;
+}
+
+.estimator-summary-card h3 {
+  margin: 0.2rem 0 0.3rem;
+  color: #183122;
+  font-size: 1.1rem;
+}
+
+.estimator-summary-card span {
+  display: block;
+  color: #4c5d52;
+  line-height: 1.5;
+}
+
+.estimator-intro-card {
+  position: relative;
+  overflow: hidden;
+  padding: 2rem;
+  border-radius: 2rem;
+  background:
+    radial-gradient(circle at top right, rgba(40, 167, 69, 0.24), transparent 28%),
+    linear-gradient(180deg, #1b3223 0%, #111d14 100%);
+  color: #f7fcf8;
+}
+
+.estimator-intro-card::before {
+  content: "";
+  position: absolute;
+  inset: auto -8% -22% auto;
+  width: 13rem;
+  height: 13rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.intro-label {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.45rem 0.8rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.estimator-intro-card h2 {
+  position: relative;
+  margin: 1rem 0 1.3rem;
+  font-size: clamp(2.3rem, 4vw, 3.6rem);
+}
+
+.intro-metrics {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.intro-metrics div {
+  padding: 1rem;
+  border-radius: 1.25rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.intro-metrics strong,
+.result-stat-card strong,
+.summary-line strong,
+.breakdown-header p,
+.milestone-card p {
+  color: #ffffff;
+  font-size: 1.05rem;
+}
+
+.estimator-primary-button,
+.estimator-secondary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  border: 0;
+  border-radius: 999px;
+  padding: 0.95rem 1.35rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+}
+
+.estimator-primary-button {
+  color: #12331c;
+  background: #f5fbf6;
+  box-shadow: 0 16px 30px rgba(17, 38, 23, 0.28);
+}
+
+.estimator-secondary-button {
+  color: #f7fcf8;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.estimator-primary-button:hover,
+.estimator-secondary-button:hover {
+  transform: translateY(-2px);
+}
+
+.estimator-workbench {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.estimator-panel {
+  padding: 1.8rem;
+  border-radius: 1.75rem;
+}
+
+.panel-heading h2 {
+  margin: 1rem 0 0.8rem;
+  font-size: clamp(2rem, 3vw, 3rem);
+}
+
+.estimator-form {
+  margin-top: 1.5rem;
+}
+
+.field-grid {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.field-grid-two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.form-field span {
+  color: #294432;
+  font-weight: 700;
+}
+
+.form-field input,
+.form-field select {
+  width: 100%;
+  border: 1px solid rgba(39, 92, 54, 0.14);
+  border-radius: 1rem;
+  padding: 0.95rem 1rem;
+  background: #fbfdfb;
+  color: #183122;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-field input:focus,
+.form-field select:focus {
+  border-color: rgba(40, 167, 69, 0.4);
+  box-shadow: 0 0 0 4px rgba(40, 167, 69, 0.1);
+}
+
+.form-field small {
+  color: #728075;
+}
+
+.checkbox-fieldset {
+  margin-top: 1.5rem;
+  padding: 1.25rem;
+  border-radius: 1.5rem;
+  background: #f7faf7;
+  border: 1px solid rgba(39, 92, 54, 0.08);
+}
+
+.checkbox-header {
+  margin-bottom: 1rem;
+}
+
+.checkbox-header span {
+  color: #294432;
+  font-weight: 700;
+}
+
+.checkbox-header p {
+  margin: 0.35rem 0 0;
+  color: #5d6d62;
+}
+
+.checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+
+.checkbox-card {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  padding: 1rem;
+  border-radius: 1.25rem;
+  background: #ffffff;
+  border: 1px solid rgba(39, 92, 54, 0.1);
+  cursor: pointer;
+}
+
+.checkbox-card input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.checkbox-mark {
+  position: relative;
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-top: 0.15rem;
+  border-radius: 0.35rem;
+  border: 1px solid rgba(39, 92, 54, 0.2);
+  background: #ffffff;
+}
+
+.checkbox-card input:checked + .checkbox-mark {
+  background: linear-gradient(135deg, #28a745, #1d7c35);
+  border-color: transparent;
+}
+
+.checkbox-card input:checked + .checkbox-mark::after {
+  content: "";
+  position: absolute;
+  left: 0.33rem;
+  top: 0.12rem;
+  width: 0.28rem;
+  height: 0.6rem;
+  border-right: 2px solid #ffffff;
+  border-bottom: 2px solid #ffffff;
+  transform: rotate(45deg);
+}
+
+.checkbox-card strong,
+.breakdown-header strong,
+.milestone-content strong {
+  display: block;
+  color: #183122;
+  font-size: 1rem;
+}
+
+.checkbox-card small {
+  display: block;
+  margin-top: 0.3rem;
+  color: #6c7a70;
+  line-height: 1.45;
+}
+
+.estimator-results-panel {
+  background:
+    linear-gradient(180deg, rgba(17, 29, 20, 0.98) 0%, rgba(25, 42, 31, 0.96) 100%);
+  color: #f5fbf6;
+}
+
+.estimator-results-panel .panel-heading span {
+  background: rgba(255, 255, 255, 0.08);
+  color: #d8eedc;
+}
+
+.estimator-results-panel .panel-heading h2,
+.estimator-results-panel .panel-heading p {
+  color: #f5fbf6;
+}
+
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.9rem;
+  margin: 1.5rem 0;
+}
+
+.result-stat-card {
+  padding: 1.15rem;
+  border-radius: 1.3rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.results-summary {
+  display: grid;
+  gap: 0.85rem;
+  margin-bottom: 1.25rem;
+}
+
+.summary-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.95rem 1rem;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.summary-line span {
+  color: #d8eedc;
+}
+
+.total-line {
+  background: rgba(40, 167, 69, 0.18);
+  border: 1px solid rgba(40, 167, 69, 0.16);
+}
+
+.project-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.project-tags span {
+  background: rgba(255, 255, 255, 0.08);
+  color: #f5fbf6;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.estimator-detail-grid,
+.estimator-notes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.detail-card,
+.note-card {
+  padding: 1.8rem;
+  border-radius: 1.75rem;
+}
+
+.breakdown-list,
+.milestone-list,
+.note-list {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.breakdown-item {
+  padding: 1rem;
+  border-radius: 1.25rem;
+  background: #f8fbf8;
+  border: 1px solid rgba(39, 92, 54, 0.08);
+}
+
+.breakdown-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.8rem;
+}
+
+.breakdown-header p {
+  margin: 0;
+  color: #183122;
+}
+
+.breakdown-bar {
+  width: 100%;
+  height: 0.65rem;
+  border-radius: 999px;
+  background: rgba(40, 167, 69, 0.1);
+  overflow: hidden;
+}
+
+.breakdown-bar span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #28a745, #86d38f);
+}
+
+.milestone-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 1rem;
+  align-items: center;
+  padding: 1rem;
+  border-radius: 1.25rem;
+  background: #f8fbf8;
+  border: 1px solid rgba(39, 92, 54, 0.08);
+}
+
+.milestone-step {
+  width: 4.5rem;
+  height: 4.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 1.4rem;
+  background: linear-gradient(135deg, #28a745, #1d7c35);
+  color: #ffffff;
+  font-weight: 800;
+}
+
+.milestone-card p {
+  margin: 0;
+  color: #183122;
+}
+
+.note-list {
+  padding: 0;
+  margin: 1.5rem 0 0;
+  list-style: none;
+}
+
+.note-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.95rem 1rem;
+  border-radius: 1rem;
+  background: #f8fbf8;
+  color: #294432;
+  border: 1px solid rgba(39, 92, 54, 0.08);
+}
+
+.note-list svg {
+  color: var(--mf-green-dark);
+  flex-shrink: 0;
+}
+
+.note-card-accent {
+  background:
+    radial-gradient(circle at top right, rgba(40, 167, 69, 0.22), transparent 28%),
+    linear-gradient(180deg, #14301d 0%, #101f15 100%);
+  color: #f5fbf6;
+}
+
+.note-card-accent .panel-heading span {
+  background: rgba(255, 255, 255, 0.08);
+  color: #d8eedc;
+}
+
+.note-card-accent .panel-heading h2,
+.note-card-accent .panel-heading p {
+  color: #f5fbf6;
+}
+
+.note-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+  margin-top: 1.5rem;
+}
+
+@media (max-width: 1080px) {
+  .estimator-shell,
+  .estimator-workbench,
+  .estimator-detail-grid,
+  .estimator-notes {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .estimator-page {
+    padding-top: 7.5rem;
+  }
+
+  .estimator-hero,
+  .estimator-workbench,
+  .estimator-detail-grid,
+  .estimator-notes {
+    width: min(100%, calc(100% - 1rem));
+  }
+
+  .estimator-copy,
+  .estimator-intro-card,
+  .estimator-panel,
+  .detail-card,
+  .note-card {
+    border-radius: 1.4rem;
+    padding: 1.35rem;
+  }
+
+  .estimator-summary-grid,
+  .field-grid-two,
+  .checkbox-grid,
+  .results-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .intro-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .milestone-card {
+    grid-template-columns: 1fr;
+    text-align: left;
+  }
+
+  .milestone-step {
+    width: fit-content;
+    min-width: 4.5rem;
+  }
+
+  .breakdown-header,
+  .summary-line {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
