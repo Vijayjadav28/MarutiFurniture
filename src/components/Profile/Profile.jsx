@@ -1,117 +1,128 @@
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../Context/AuthContext';
-import { auth, db } from '../../libs/firebase';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { updateProfile } from 'firebase/auth';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import './Profile.css';
+import React, { useState, useEffect } from "react";
+import { useAuth } from "../../Context/AuthContext";
+import { auth, db } from "../../libs/firebase";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { updateProfile } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { RiAdminFill } from "react-icons/ri";
+import "./Profile.css";
+
+/* 🔐 Admin emails */
+const ADMIN_EMAILS = [
+  "vijayjadav2863@gmail.com",
+  "marutifurniture@gmail.com",
+];
 
 function Profile() {
   const { currentUser } = useAuth();
   const navigate = useNavigate();
-  
+
+  const isAdmin =
+    currentUser && ADMIN_EMAILS.includes(currentUser.email);
 
   const [profile, setProfile] = useState({
-    displayName: '',
-    email: '',
-    phone: '',
-    address: '',
-    city: '',
-    state: '',
-    zipCode: '',
-    country: ''
+    displayName: "",
+    email: "",
+    phone: "",
+    address: "",
+    city: "",
+    state: "",
+    zipCode: "",
+    country: "",
   });
-  
+
   const [loading, setLoading] = useState(false);
   const [editMode, setEditMode] = useState(false);
 
-
+  /* 🔄 Fetch user data */
   useEffect(() => {
     const fetchUserData = async () => {
-      if (currentUser) {
-        setLoading(true);
-        try {
-      
-          setProfile(prev => ({
-            ...prev,
-            displayName: currentUser.displayName || '',
-            email: currentUser.email || ''
-          }));
+      if (!currentUser) return;
 
-      
-          const docRef = doc(db, 'users', currentUser.uid);
-          const docSnap = await getDoc(docRef);
-          
-          if (docSnap.exists()) {
-            setProfile(prev => ({
-              ...prev,
-              ...docSnap.data()
-            }));
-          }
-        } catch (error) {
-          toast.error('Failed to load profile data');
-          console.error('Error fetching user data:', error);
-        } finally {
-          setLoading(false);
+      setLoading(true);
+      try {
+        setProfile((prev) => ({
+          ...prev,
+          displayName: currentUser.displayName || "",
+          email: currentUser.email || "",
+        }));
+
+        const docRef = doc(db, "users", currentUser.uid);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          setProfile((prev) => ({
+            ...prev,
+            ...docSnap.data(),
+          }));
         }
+      } catch (error) {
+        toast.error("Failed to load profile data");
+        console.error(error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchUserData();
   }, [currentUser]);
 
+  /* ✏️ Handle input */
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setProfile(prev => ({
+    setProfile((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
+  /* 💾 Save profile */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    
+
     try {
-     
       if (profile.displayName !== currentUser.displayName) {
         await updateProfile(auth.currentUser, {
-          displayName: profile.displayName
+          displayName: profile.displayName,
         });
       }
 
-     
-      const userRef = doc(db, 'users', currentUser.uid);
-      
-      await setDoc(userRef, {
-        displayName: profile.displayName,
-        phone: profile.phone,
-        address: profile.address,
-        city: profile.city,
-        state: profile.state,
-        zipCode: profile.zipCode,
-        country: profile.country,
-        lastUpdated: new Date()
-      }, { merge: true });
+      const userRef = doc(db, "users", currentUser.uid);
+      await setDoc(
+        userRef,
+        {
+          displayName: profile.displayName,
+          phone: profile.phone,
+          address: profile.address,
+          city: profile.city,
+          state: profile.state,
+          zipCode: profile.zipCode,
+          country: profile.country,
+          lastUpdated: new Date(),
+        },
+        { merge: true }
+      );
 
-      toast.success('Profile updated successfully!');
+      toast.success("Profile updated successfully!");
       setEditMode(false);
     } catch (error) {
-      toast.error('Failed to update profile');
-      console.error('Error updating profile:', error);
+      toast.error("Failed to update profile");
+      console.error(error);
     } finally {
       setLoading(false);
     }
   };
 
+  /* 🚪 Logout */
   const handleLogout = async () => {
     try {
       await auth.signOut();
-      navigate('/signin');
+      localStorage.removeItem("isAdmin");
+      navigate("/signin");
     } catch (error) {
-      toast.error('Failed to log out');
-      console.error('Logout error:', error);
+      toast.error("Failed to log out");
     }
   };
 
@@ -122,23 +133,35 @@ function Profile() {
   return (
     <div className="profile-container">
       <h2>My Profile</h2>
-      
+
+      {/* 🔰 Profile Header */}
       <div className="profile-header">
         <div className="profile-avatar">
-          {profile.displayName ? profile.displayName.charAt(0).toUpperCase() : 'U'}
+          {profile.displayName
+            ? profile.displayName.charAt(0).toUpperCase()
+            : "U"}
         </div>
+
         <div>
-          <h3>{profile.displayName || 'User'}</h3>
+          <h3>
+            {profile.displayName || "User"}
+            {isAdmin && (
+              <RiAdminFill
+                title="Admin"
+                style={{ color: "crimson", marginLeft: "6px" }}
+              />
+            )}
+          </h3>
           <p>{profile.email}</p>
         </div>
       </div>
 
+      {/*  Edit  */}
       {editMode ? (
         <form onSubmit={handleSubmit} className="profile-form">
           <div className="form-group">
             <label>Full Name</label>
             <input
-              type="text"
               name="displayName"
               value={profile.displayName}
               onChange={handleInputChange}
@@ -148,17 +171,12 @@ function Profile() {
 
           <div className="form-group">
             <label>Email</label>
-            <input
-              type="email"
-              value={profile.email}
-              disabled
-            />
+            <input value={profile.email} disabled />
           </div>
 
           <div className="form-group">
-            <label>Phone Number</label>
+            <label>Phone</label>
             <input
-              type="tel"
               name="phone"
               value={profile.phone}
               onChange={handleInputChange}
@@ -168,7 +186,6 @@ function Profile() {
           <div className="form-group">
             <label>Address</label>
             <input
-              type="text"
               name="address"
               value={profile.address}
               onChange={handleInputChange}
@@ -176,99 +193,80 @@ function Profile() {
           </div>
 
           <div className="form-row">
-            <div className="form-group">
-              <label>City</label>
-              <input
-                type="text"
-                name="city"
-                value={profile.city}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div className="form-group">
-              <label>State/Province</label>
-              <input
-                type="text"
-                name="state"
-                value={profile.state}
-                onChange={handleInputChange}
-              />
-            </div>
+            <input
+              name="city"
+              placeholder="City"
+              value={profile.city}
+              onChange={handleInputChange}
+            />
+            <input
+              name="state"
+              placeholder="State"
+              value={profile.state}
+              onChange={handleInputChange}
+            />
           </div>
 
           <div className="form-row">
-            <div className="form-group">
-              <label>ZIP/Postal Code</label>
-              <input
-                type="text"
-                name="zipCode"
-                value={profile.zipCode}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div className="form-group">
-              <label>Country</label>
-              <input
-                type="text"
-                name="country"
-                value={profile.country}
-                onChange={handleInputChange}
-              />
-            </div>
+            <input
+              name="zipCode"
+              placeholder="ZIP Code"
+              value={profile.zipCode}
+              onChange={handleInputChange}
+            />
+            <input
+              name="country"
+              placeholder="Country"
+              value={profile.country}
+              onChange={handleInputChange}
+            />
           </div>
 
           <div className="form-actions">
-            <button 
-              type="button" 
+            <button
+              type="button"
               className="cancel-btn"
               onClick={() => setEditMode(false)}
-              disabled={loading}
             >
               Cancel
             </button>
-            <button 
-              type="submit" 
-              className="save-btn"
-              disabled={loading}
-            >
-              {loading ? 'Saving...' : 'Save Changes'}
+            <button type="submit" className="save-btn">
+              {loading ? "Saving..." : "Save Changes"}
             </button>
           </div>
         </form>
       ) : (
+        /*  View */
         <div className="profile-details">
-          <div className="detail-item">
-            <span className="detail-label">Full Name:</span>
-            <span className="detail-value">{profile.displayName || 'Not set'}</span>
-          </div>
-          <div className="detail-item">
-            <span className="detail-label">Email:</span>
-            <span className="detail-value">{profile.email}</span>
-          </div>
-          <div className="detail-item">
-            <span className="detail-label">Phone:</span>
-            <span className="detail-value">{profile.phone || 'Not set'}</span>
-          </div>
-          <div className="detail-item">
-            <span className="detail-label">Address:</span>
-            <span className="detail-value">
-              {profile.address 
-                ? `${profile.address}, ${profile.city}, ${profile.state} ${profile.zipCode}, ${profile.country}`
-                : 'Not set'
-              }
-            </span>
-          </div>
+          <p><b>Phone:</b> {profile.phone || "Not set"}</p>
+          <p>
+            <b>Address:</b>{" "}
+            {profile.address
+              ? `${profile.address}, ${profile.city}, ${profile.state} ${profile.zipCode}, ${profile.country}`
+              : "Not set"}
+          </p>
 
           <div className="profile-actions">
-            <button 
-              onClick={() => setEditMode(true)}
+            <button
               className="edit-btn"
+              onClick={() => setEditMode(true)}
             >
               Edit Profile
             </button>
-            <button 
+
+            {isAdmin && (
+              <button
+                className="edit-btn"
+                style={{ background: "#218838" }}
+                onClick={() => navigate("/profile/admin/admindashboard")}
+              >
+                Admin Dashboard
+              </button>
+            )}
+
+            <button
+              className="profile-logout-btn"
               onClick={handleLogout}
-              className="logout-btn"
             >
               Logout
             </button>

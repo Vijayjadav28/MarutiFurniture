@@ -1,7 +1,7 @@
 .footer {
   margin-top: 5rem;
-  background-color: #1b1b1b;
-  color: #f0f0f0;
+  background:#1B1B1B;
+  color: #fafcfb;
   padding: 50px 20px 30px;
   font-family: "Segoe UI", sans-serif;
 }
@@ -47,7 +47,7 @@
 }
 
 .footer-bottom {
-  border-top: 1px solid #ffffff;
+  border-top: 1px solid rgba(255, 255, 255, 0.25);
   text-align: center;
   padding-top: 20px;
   margin-top: 30px;

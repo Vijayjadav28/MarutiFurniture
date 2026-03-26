@@ -8,8 +8,8 @@
 
 /* Hero Section */
 .contact-hero {
-  background:  #333;
-  color: #28a745;
+  background: linear-gradient(135deg, #218838 0%, #28a745 50%, #34ce57 100%);
+  color: #ffffff;
   padding: 5rem 1rem;
   text-align: center;
 }
@@ -111,7 +111,7 @@
 .form-textarea:focus {
   outline: none;
   border-color: #28a745;
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+  box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.15);
 }
 
 .input-highlight {
@@ -149,9 +149,9 @@
 }
 
 .submit-btn:hover {
-  background: #444;
+  background: #218838;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.35);
 }
 
 .submit-btn:disabled {

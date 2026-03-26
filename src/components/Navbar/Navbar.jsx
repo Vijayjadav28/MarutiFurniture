@@ -2,10 +2,14 @@ import { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import { IoCartOutline } from "react-icons/io5";
 import { FaRegUserCircle } from "react-icons/fa";
+import { RiAdminFill } from "react-icons/ri";
+import {toast, ToastContainer} from 'react-toastify';
 import { useAuth } from '../../Context/AuthContext';
 import './Navbar.css';
 
 const Navbar = () => {
+
+
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { currentUser } = useAuth();
@@ -24,7 +28,9 @@ const Navbar = () => {
 
   return (
     <header className={`navbar ${scrolled ? 'scrolled' : ''}`}>
+      
       <div className="container">
+        
         <NavLink to="/" className="logo" onClick={() => setIsMenuOpen(false)}>
           <span>Maruti</span>Furniture
         </NavLink>
@@ -53,6 +59,7 @@ const Navbar = () => {
             <NavLink to="/signin" onClick={() => setIsMenuOpen(false)}>
               <FaRegUserCircle />
             </NavLink>
+            
           )}
         </div>
 

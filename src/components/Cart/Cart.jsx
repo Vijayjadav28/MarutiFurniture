@@ -146,7 +146,7 @@ function Cart() {
           name: currentUser?.displayName || "Customer",
           email: currentUser?.email || "test@example.com",
         },
-        theme: { color: "#0d6efd" },
+        theme: { color: "#28a745" },
       };
 
       const rzp = new window.Razorpay(options);
@@ -208,7 +208,8 @@ function Cart() {
                     }
                   >
                     <div className="product-image">
-                      <img src={`/${item.img[0]}`} alt={item.name} />
+                   <img src={item.img[0]} alt={item.name} />
+
                     </div>
                     <div className="product-details">
                       <h4>{item.name}</h4>
@@ -292,7 +293,7 @@ function Cart() {
               {/* Online Payment Button */}
               <button
                 className="checkout-btn"
-                style={{ backgroundColor: "#0d6efd", marginTop: "10px" }}
+                style={{ backgroundColor: "#28a745", marginTop: "10px" }}
                 onClick={handlePayment}
               >
                 Pay Online (Razorpay)

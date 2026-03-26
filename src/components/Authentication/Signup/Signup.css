@@ -11,7 +11,7 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  background: linear-gradient(135deg, #fafcfb 0%, #e8f5eb 100%);
   
 }
 
@@ -52,7 +52,7 @@
 
 .form-group input:focus {
   outline: none;
-  border-color: #4a90e2;
+  border-color: #28a745;
 }
 
 .remember-me {
@@ -73,7 +73,7 @@
 .login-button {
   width: 100%;
   padding: 12px;
-  background-color: #4a90e2;
+  background-color: #28a745;
   color: white;
   border: none;
   border-radius: 5px;
@@ -84,7 +84,7 @@
 }
 
 .login-button:hover {
-  background-color: #357ab8;
+  background-color: #218838;
 }
 
 .links {
@@ -94,7 +94,7 @@
 
 .links a {
   display: block;
-  color: #4a90e2;
+  color: #28a745;
   text-decoration: none;
   margin-bottom: 10px;
   font-size: 14px;

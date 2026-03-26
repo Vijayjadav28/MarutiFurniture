@@ -1,7 +1,7 @@
 
   .cart-page {
     margin-top: 80px;
-    background-color: #f8f9fa;
+    background-color: #fafcfb;
     min-height: 100vh;
     padding: 2rem 0;
   }
@@ -41,7 +41,7 @@
   }
 
   .back-button:hover {
-    color: #ff6b6b;
+    color: #218838;
   }
 
   .cart-summary-mobile {
@@ -58,7 +58,7 @@
 
   .empty-cart-icon {
     font-size: 3rem;
-    color: #ddd;
+    color: #a5d6a7;
     margin-bottom: 1rem;
   }
 
@@ -74,7 +74,7 @@
   }
 
   .shop-now-btn {
-    background: #ff6b6b;
+    background: #28a745;
     color: white;
     border: none;
     padding: 0.8rem 2rem;
@@ -85,7 +85,7 @@
   }
 
   .shop-now-btn:hover {
-    background: #ff5252;
+    background: #218838;
     transform: translateY(-2px);
   }
 
@@ -195,8 +195,8 @@
 }
 
   .product-quantity button:hover {
-    border-color: #ff6b6b;
-    color: #ff6b6b;
+    border-color: #28a745;
+    color: #218838;
   }
 
   .product-quantity button:disabled {
@@ -225,7 +225,7 @@
   }
 
   .product-remove button:hover {
-    color: #ff6b6b;
+    color: #c62828;
   }
 
   .cart-summary {
@@ -262,12 +262,12 @@
   }
 
   .free-shipping {
-    color: #4caf50;
+    color: #28a745;
   }
 
   .checkout-btn {
     width: 100%;
-    background: #ff6b6b;
+    background: #28a745;
     color: white;
     border: none;
     padding: 1rem;
@@ -280,7 +280,7 @@
   }
 
   .checkout-btn:hover {
-    background: #ff5252;
+    background: #218838;
     transform: translateY(-2px);
   }
 
@@ -366,7 +366,7 @@
       position: absolute;
       right: 0;
       top: 0;
-      background: #ff6b6b;
+      background: #28a745;
       color: white;
       padding: 0.3rem 0.8rem;
       border-radius: 20px;

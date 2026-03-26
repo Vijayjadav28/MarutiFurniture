@@ -3,9 +3,23 @@
   max-width: 800px;
   margin: 6rem auto;
   padding: 2rem;
-  background: #fff;
+  background: var(--mf-white, #fff);
   border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 10px rgba(40, 167, 69, 0.08);
+  border: 1px solid var(--mf-border, #e2eae4);
+}
+
+.admin-login-btn {
+  position: absolute;
+  top: 7.5rem;
+  right: 20rem;
+  padding: 0.5rem 1rem;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
 }
 
 .profile-header {
@@ -18,7 +32,7 @@
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background-color: #4a6fa5;
+  background-color: #28a745;
   color: white;
   display: flex;
   align-items: center;
@@ -106,21 +120,23 @@ button {
 }
 
 .edit-btn {
-  background-color: #4a6fa5;
+  background-color: #28a745;
   color: white;
 }
 
 .edit-btn:hover {
-  background-color: #3a5a8f;
+  background-color: #218838;
 }
 
-.logout-btn {
-  background-color: #f5f5f5;
-  color: #555;
+.profile-logout-btn {
+  background-color: #eef2ef;
+  color: #3d5245;
+  border: 1px solid var(--mf-border, #e2eae4);
 }
 
-.logout-btn:hover {
-  background-color: #e0e0e0;
+.profile-logout-btn:hover {
+  background-color: #dfe8e2;
+  color: #1e5631;
 }
 
 .save-btn {

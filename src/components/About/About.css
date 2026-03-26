@@ -1,136 +1,308 @@
-.about-page{
+.about-page {
+  --about-accent: #28a745;
+  --about-accent-dark: #218838;
+  --about-ink: #1a1a1a;
+  --about-muted: #5c5c5c;
+  --about-surface: #f4f6f5;
+  --about-card: #ffffff;
+  --about-radius: 12px;
+  --about-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
   margin-top: 110px;
+  min-height: calc(100vh - 110px);
+  background: var(--about-surface);
 }
 
-.about-container {
-  margin: -18px auto;
-
-  
-}
-
-.about-header {
- 
+.about-hero {
+  position: relative;
+  min-height: 280px;
   display: flex;
-  flex-direction: column;
+  align-items: center;
   justify-content: center;
-  background-color: #333;
-  height: 18rem;
-  color: white;
   text-align: center;
+  color: #fff;
+  background:
+    linear-gradient(135deg, rgba(26, 26, 26, 0.92) 0%, rgba(40, 80, 50, 0.88) 100%),
+    url("https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=1920&q=80")
+      center / cover no-repeat;
+  padding: 3rem 1.25rem;
 }
 
-.about-header h1 {
-  font-size: 2.2rem;
-  margin-bottom: 0.5rem;
+.about-hero__inner {
+  position: relative;
+  z-index: 1;
+  max-width: 40rem;
 }
 
-.about-header span {
-  color: #28a745;
+.about-hero__eyebrow {
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0 0 0.75rem;
 }
 
-.about-header p {
-  color: #ccc;
+.about-hero h1 {
+  font-size: clamp(1.85rem, 4vw, 2.65rem);
+  font-weight: 700;
+  margin: 0 0 0.75rem;
+  line-height: 1.15;
+}
+
+.about-hero__brand {
+  color: #7dd87a;
+}
+
+.about-hero__tagline {
+  margin: 0;
+  font-size: clamp(1rem, 2vw, 1.15rem);
+  color: rgba(255, 255, 255, 0.88);
+  line-height: 1.55;
+}
+
+.about-wrap {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 1.25rem 3.5rem;
+}
+
+.about-story {
+  display: grid;
+  gap: 2.5rem;
+  align-items: center;
+  padding: 3rem 0 2rem;
+}
+
+@media (min-width: 900px) {
+  .about-story {
+    grid-template-columns: 1fr 1fr;
+    gap: 3.5rem;
+    padding: 3.5rem 0 2.5rem;
+  }
+}
+
+.about-story__text h2 {
+  font-size: clamp(1.5rem, 3vw, 1.85rem);
+  color: var(--about-ink);
+  margin: 0 0 1.25rem;
+}
+
+.about-story__text p {
+  margin: 0 0 1rem;
+  color: var(--about-muted);
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+.about-story__text p:last-of-type {
+  margin-bottom: 1.5rem;
+}
+
+.about-story__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.65rem 1rem;
+  background: rgba(40, 167, 69, 0.1);
+  border: 1px solid rgba(40, 167, 69, 0.25);
+  border-radius: 999px;
+  font-size: 0.9rem;
+  color: #2d6a3e;
+  font-weight: 500;
+}
+
+.about-story__pill-icon {
+  flex-shrink: 0;
+  color: var(--about-accent);
   font-size: 1.1rem;
 }
 
-.about-content p {
-  margin-bottom: 1rem;
-  color: #444;
-  font-size: 1rem;
+.about-story__figure {
+  margin: 0;
+  border-radius: var(--about-radius);
+  overflow: hidden;
+  box-shadow: var(--about-shadow);
+  background: var(--about-card);
+}
+
+.about-story__figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+}
+
+.about-values {
+  padding: 2.5rem 0 1rem;
+}
+
+.about-values__head {
+  text-align: center;
+  max-width: 36rem;
+  margin: 0 auto 2.25rem;
+}
+
+.about-values__head h2 {
+  font-size: clamp(1.5rem, 3vw, 1.95rem);
+  color: var(--about-ink);
+  margin: 0 0 0.75rem;
+}
+
+.about-values__accent {
+  color: var(--about-accent);
+}
+
+.about-values__head p {
+  margin: 0;
+  color: var(--about-muted);
+  font-size: 1.05rem;
   line-height: 1.6;
 }
 
-.why-maruti {
-  display: flex;
-  flex-wrap: wrap;
-  padding: 2rem;
-  background: #f8f9fa;
-  gap: 2rem;
-  justify-content: center;
+.about-values__grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 1.25rem;
 }
 
-.why-title {
-  font-size: 2rem;
+@media (min-width: 600px) {
+  .about-values__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 960px) {
+  .about-values__grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+  }
+}
+
+.about-value-card {
+  background: var(--about-card);
+  border-radius: var(--about-radius);
+  padding: 1.5rem 1.35rem;
+  box-shadow: var(--about-shadow);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.about-value-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.08);
+}
+
+.about-value-card__icon-wrap {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 10px;
+  background: rgba(40, 167, 69, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.about-value-card__icon {
+  font-size: 1.35rem;
+  color: var(--about-accent);
+}
+
+.about-value-card h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.05rem;
+  color: var(--about-ink);
+}
+
+.about-value-card p {
+  margin: 0;
+  font-size: 0.92rem;
+  color: var(--about-muted);
+  line-height: 1.55;
+}
+
+.about-cta {
+  margin-top: 2.5rem;
+  padding: 2rem 1.5rem;
   text-align: center;
-  margin-bottom: 1.5rem;
-  color: #111;
-  width: 100%;
+  background: linear-gradient(
+    145deg,
+    rgba(40, 167, 69, 0.12) 0%,
+    rgba(255, 255, 255, 0.95) 50%,
+    rgba(40, 167, 69, 0.08) 100%
+  );
+  border: 1px solid rgba(40, 167, 69, 0.2);
+  border-radius: var(--about-radius);
 }
 
-.why-title span {
-  color: #28a745;
+.about-cta p {
+  margin: 0 0 1.25rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--about-ink);
 }
 
-.feature-row {
-  margin-top: 20px;
+.about-cta__actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 2rem;
+  gap: 0.75rem;
   justify-content: center;
-  width: 100%;
 }
 
-.feature-card {
+.about-cta__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.about-cta__btn--primary {
+  background: var(--about-accent);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(40, 167, 69, 0.35);
+}
+
+.about-cta__btn--primary:hover {
+  background: var(--about-accent-dark);
+  transform: translateY(-1px);
+}
+
+.about-cta__btn--ghost {
   background: #fff;
-  padding: 1.5rem;
-  border: 1px solid #ddd;
-  width: 280px;
-  display: flex;
-  align-items: flex-start;
-  gap: 1rem;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  border-radius: 8px;
-  transition: transform 0.2s ease;
+  color: var(--about-ink);
+  border: 2px solid rgba(0, 0, 0, 0.12);
 }
 
-.feature-card:hover {
-  transform: translateY(-15px);
+.about-cta__btn--ghost:hover {
+  border-color: var(--about-accent);
+  color: var(--about-accent);
 }
 
-.feature-icon {
-  font-size: 8rem;
-  color: #28a745;
-  margin-top: 5px;
-}
-
-.right {
-  margin-top: 6rem;
-}
-
-/* Responsive for tablets */
 @media (max-width: 768px) {
-  .about-header {
-    height: auto;
-    padding: 2rem 1rem;
+  .about-page {
+    margin-top: 90px;
   }
 
-  .about-header h1 {
-    font-size: 1.8rem;
-  }
-
-  .about-header p {
-    font-size: 1rem;
-  }
-
-  .feature-card {
-    width: 90%;
-    flex-direction: row;
+  .about-hero {
+    min-height: 240px;
+    padding: 2.25rem 1rem;
   }
 }
 
-/* Responsive for mobile */
 @media (max-width: 480px) {
-  .why-maruti {
-    padding: 1rem;
+  .about-wrap {
+    padding-left: 1rem;
+    padding-right: 1rem;
   }
 
-  .feature-card {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-
-  .feature-icon {
-    font-size: 2.2rem;
+  .about-value-card {
+    text-align: left;
   }
 }

@@ -1,11 +1,60 @@
-
 .single-item-container {
   max-width: 1200px;
   margin: 5rem auto;
   padding: 0 1rem;
   animation: fadeIn 0.5s ease-in-out;
+
+  box-sizing: border-box;
+}
+/* Add to SingleItemCard.css */
+
+.thumbnail.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 
+.thumbnail-placeholder {
+  width: 100%;
+  height: 100%;
+  background: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  border: 1px dashed #ddd;
+  color: #888;
+  font-size: 12px;
+}
+
+.placeholder-image {
+  width: 100%;
+  height: 400px;
+  background: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border: 2px dashed #ddd;
+  color: #888;
+}
+
+/* Ensure thumbnails maintain aspect ratio */
+.thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+/* Debug styles (remove in production) */
+.debug-info {
+  margin-top: 20px;
+  padding: 10px;
+  background: #f5f5f5;
+  border-radius: 4px;
+  font-size: 12px;
+}
 .single-item {
   display: flex;
   gap: 3rem;
@@ -14,10 +63,21 @@
   border-radius: 12px;
   padding: 2rem;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+
+  flex-wrap: wrap;
 }
 
 .product-gallery {
-  flex: 1;
+  flex: 1 1 45%;
+
+  min-width: 0;
+}
+
+.product-details {
+  /* Use flex-basis for better control, allowing it to grow and shrink */
+  flex: 1 1 45%;
+  /* Crucial: Allows the flex item to shrink below its content size */
+  min-width: 0;
 }
 
 .main-image {
@@ -46,8 +106,9 @@
 .thumbnail-container {
   display: flex;
   gap: 1rem;
+  overflow-x: auto;
+  padding-bottom: 5px;
 }
-
 .thumbnail {
   width: 70px;
   height: 70px;
@@ -56,14 +117,15 @@
   cursor: pointer;
   overflow: hidden;
   transition: all 0.3s ease;
+  flex-shrink: 0;
 }
 
 .thumbnail:hover {
-  border-color: #ff6b6b;
+  border-color: #28a745;
 }
 
 .thumbnail.active {
-  border: 2px solid #ff6b6b;
+  border: 2px solid #28a745;
 }
 
 .thumbnail img {
@@ -72,12 +134,8 @@
   object-fit: cover;
 }
 
-.product-details {
-  flex: 1;
-}
-
 .product-header h1 {
-  font-size: 1.8rem;
+  font-size: 1.7rem;
   margin-bottom: 0.5rem;
   color: #333;
 }
@@ -90,7 +148,7 @@
 }
 
 .star {
-  color: #ffc107;
+  color: #28a745;
   font-size: 1.2rem;
 }
 
@@ -107,7 +165,7 @@
 }
 
 .price-section h2 {
-  font-size: 2rem;
+  font-size: 1.5rem;
   color: #333;
   margin: 0;
 }
@@ -119,12 +177,13 @@
 }
 
 .discount {
-  background: #ff6b6b;
+  background: #28a745;
   color: white;
-  padding: 0.2rem 0.5rem;
+  padding: 0.2rem 0.4rem;
   border-radius: 4px;
   font-size: 0.9rem;
   font-weight: bold;
+  flex-shrink: 0;
 }
 
 .availability {
@@ -152,8 +211,6 @@
   margin-bottom: 1rem;
 }
 
-
-
 .delivery-icon {
   margin-top: 1rem;
   font-size: 1.5rem;
@@ -178,7 +235,8 @@
   margin: 2rem 0;
 }
 
-.buy-now-btn, .add-to-cart-btn {
+.buy-now-btn,
+.add-to-cart-btn {
   flex: 1;
   padding: 1rem;
   border: none;
@@ -190,12 +248,12 @@
 }
 
 .buy-now-btn {
-  background: #ff6b6b;
+  background: #28a745;
   color: white;
 }
 
 .buy-now-btn:hover {
-  background: #ff5252;
+  background: #218838;
   transform: translateY(-2px);
 }
 
@@ -223,7 +281,7 @@
 }
 
 .offer-icon {
-  color: #ff6b6b;
+  color: #218838;
 }
 
 .offer-list {
@@ -277,8 +335,7 @@
 
 .spec-grid {
   display: grid;
-  grid-template-columns: repeat;
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
 }
 
 .spec-item {
@@ -305,17 +362,27 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-/* Responsive styles */
 @media (max-width: 992px) {
   .single-item {
     flex-direction: column;
     gap: 2rem;
   }
-  
+
+  .product-gallery,
+  .product-details {
+    flex: 1 1 100%;
+  }
+
   .main-image {
     height: 350px;
   }
@@ -325,11 +392,11 @@
   .single-item {
     padding: 1.5rem;
   }
-  
+
   .product-actions {
     flex-direction: column;
   }
-  
+
   .spec-grid {
     grid-template-columns: 1fr;
   }
@@ -339,11 +406,11 @@
   .main-image {
     height: 250px;
   }
-  
+
   .price-section {
     flex-wrap: wrap;
   }
-  
+
   .product-header h1 {
     font-size: 1.5rem;
   }
