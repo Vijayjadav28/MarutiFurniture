@@ -34,8 +34,6 @@ const Navbar = () => {
   };
 
   const navLinkClass = ({ isActive }) => (isActive ? "active" : "");
-  const plannerLinkClass = ({ isActive }) =>
-    `planner-tab ${isActive ? "active" : ""}`.trim();
   const iconLinkClass = ({ isActive }) =>
     `nav-icon-link ${isActive ? "active" : ""}`.trim();
 
@@ -50,7 +48,7 @@ const Navbar = () => {
         />
       ) : null}
 
-      <div className="navbar-container">
+      <div className="container">
         <NavLink to="/" className="logo" onClick={closeMenu}>
           <span>Maruti</span>Furniture
         </NavLink>
@@ -71,7 +69,8 @@ const Navbar = () => {
           </NavLink>
           <NavLink
             to="/cost-estimator"
-            className={plannerLinkClass}
+            end
+            className={navLinkClass}
             onClick={closeMenu}
           >
             Estimator

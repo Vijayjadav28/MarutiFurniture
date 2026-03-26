@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   FiArrowRight,
@@ -7,6 +7,12 @@ import {
   FiHome,
   FiLayers,
   FiTrendingUp,
+  FiDollarSign,
+  FiCalendar,
+  FiUsers,
+  FiCpu,
+  FiPackage,
+  FiGrid,
 } from "react-icons/fi";
 import "./Estimator.css";
 import {
@@ -21,6 +27,10 @@ import {
 } from "../../utils/estimatorUtils";
 
 function Estimator() {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const navigate = useNavigate();
   const [formData, setFormData] = useState(defaultEstimateForm);
 
@@ -65,28 +75,39 @@ function Estimator() {
 
   return (
     <div className="estimator-page">
+      {/* Hero Section */}
       <section className="estimator-hero">
         <div className="estimator-shell">
           <div className="estimator-copy">
-            <span className="estimator-eyebrow">Furniture project planner</span>
+            <div className="estimator-eyebrow-wrapper">
+              <span className="estimator-eyebrow">
+                <FiCpu /> Smart Furniture Planner
+              </span>
+            </div>
             <h1>
-              Give your house length and width, and we will estimate furniture
-              cost and completion time.
+              Transform your house dimensions into a <span>smart budget</span>{" "}
+              and timeline
             </h1>
             <p>
-              This planning page turns simple house dimensions into a realistic
-              furnishing budget window, expected execution time, and a breakdown
-              of where the money typically goes.
+              Enter your room dimensions and get an instant, realistic furniture
+              budget range, project timeline, and detailed cost breakdown based
+              on your material and finish preferences.
             </p>
 
             <div className="estimator-badges">
-              <span>{estimate.selectedHome.rooms}</span>
-              <span>{estimate.selectedMaterial.label}</span>
-              <span>{estimate.selectedUrgency.label}</span>
+              <span>
+                <FiPackage /> {estimate.selectedHome.rooms}
+              </span>
+              <span>
+                <FiGrid /> {estimate.selectedMaterial.label}
+              </span>
+              <span>
+                <FiClock /> {estimate.selectedUrgency.label}
+              </span>
             </div>
 
             <div className="estimator-summary-grid">
-              {summaryCards.map((card) => (
+              {summaryCards.map((card, idx) => (
                 <article key={card.title} className="estimator-summary-card">
                   <div className="summary-card-icon">{card.icon}</div>
                   <div>
@@ -100,30 +121,38 @@ function Estimator() {
           </div>
 
           <div className="estimator-intro-card">
-            <span className="intro-label">Quick estimate</span>
+            <div className="intro-label-wrapper">
+              <span className="intro-label">
+                <FiDollarSign /> Quick estimate
+              </span>
+            </div>
             <h2>
               {estimate.hasValidArea
-                ? `${formatCurrency(estimate.estimatedLow)} - ${formatCurrency(
+                ? `${formatCurrency(estimate.estimatedLow)} — ${formatCurrency(
                     estimate.estimatedHigh
                   )}`
                 : "Enter dimensions to begin"}
             </h2>
             <div className="intro-metrics">
               <div>
+                <FiCalendar />
                 <p>Timeline</p>
                 <strong>{estimate.weekRange}</strong>
               </div>
               <div>
+                <FiClock />
                 <p>Start window</p>
                 <strong>{estimate.startWindow}</strong>
               </div>
               <div>
+                <FiUsers />
                 <p>Site team</p>
                 <strong>
                   {estimate.teamSize ? `${estimate.teamSize} specialists` : "--"}
                 </strong>
               </div>
               <div>
+                <FiLayers />
                 <p>Craft level</p>
                 <strong>{estimate.selectedPackage.label}</strong>
               </div>
@@ -133,120 +162,130 @@ function Estimator() {
               className="estimator-primary-button"
               onClick={() => navigate("/contact")}
             >
-              Book a consultation <FiArrowRight />
+              Book a free consultation <FiArrowRight />
             </button>
           </div>
         </div>
       </section>
 
+      {/* Workbench Section */}
       <section className="estimator-workbench">
         <div className="estimator-panel estimator-form-panel">
           <div className="panel-heading">
-            <span>Project details</span>
-            <h2>Build your estimate</h2>
+            <span>
+              <FiGrid /> Configure your project
+            </span>
+            <h2>Build your custom estimate</h2>
             <p>
-              Tune the house size, furnishing level, and add-ons to match your
-              project scope.
+              Adjust dimensions, materials, and scope to see how your choices
+              affect budget and timeline.
             </p>
           </div>
 
           <form className="estimator-form">
-            <div className="field-grid field-grid-two">
-              <label className="form-field">
-                <span>House length</span>
-                <input
-                  type="number"
-                  min="1"
-                  name="length"
-                  value={formData.length}
-                  onChange={handleChange}
-                  placeholder="40"
-                />
-                <small>Enter in feet</small>
-              </label>
-
-              <label className="form-field">
-                <span>House width</span>
-                <input
-                  type="number"
-                  min="1"
-                  name="width"
-                  value={formData.width}
-                  onChange={handleChange}
-                  placeholder="30"
-                />
-                <small>Enter in feet</small>
-              </label>
+            <div className="dimension-group">
+              <h4>
+                <FiHome /> House dimensions
+              </h4>
+              <div className="field-grid field-grid-two">
+                <label className="form-field">
+                  <span>Length (feet)</span>
+                  <input
+                    type="number"
+                    min="1"
+                    name="length"
+                    value={formData.length}
+                    onChange={handleChange}
+                    placeholder="e.g., 40"
+                  />
+                </label>
+                <label className="form-field">
+                  <span>Width (feet)</span>
+                  <input
+                    type="number"
+                    min="1"
+                    name="width"
+                    value={formData.width}
+                    onChange={handleChange}
+                    placeholder="e.g., 30"
+                  />
+                </label>
+              </div>
             </div>
 
-            <div className="field-grid field-grid-two">
-              <label className="form-field">
-                <span>Home type</span>
-                <select
-                  name="homeType"
-                  value={formData.homeType}
-                  onChange={handleChange}
-                >
-                  {Object.entries(homeOptions).map(([key, option]) => (
-                    <option key={key} value={key}>
-                      {option.label} ({option.rooms})
-                    </option>
-                  ))}
-                </select>
-              </label>
+            <div className="options-group">
+              <h4>
+                <FiPackage /> Project options
+              </h4>
+              <div className="field-grid field-grid-two">
+                <label className="form-field">
+                  <span>Home type</span>
+                  <select
+                    name="homeType"
+                    value={formData.homeType}
+                    onChange={handleChange}
+                  >
+                    {Object.entries(homeOptions).map(([key, option]) => (
+                      <option key={key} value={key}>
+                        {option.label} ({option.rooms})
+                      </option>
+                    ))}
+                  </select>
+                </label>
 
-              <label className="form-field">
-                <span>Furnishing package</span>
-                <select
-                  name="packageType"
-                  value={formData.packageType}
-                  onChange={handleChange}
-                >
-                  {Object.entries(packageOptions).map(([key, option]) => (
-                    <option key={key} value={key}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            </div>
+                <label className="form-field">
+                  <span>Furnishing package</span>
+                  <select
+                    name="packageType"
+                    value={formData.packageType}
+                    onChange={handleChange}
+                  >
+                    {Object.entries(packageOptions).map(([key, option]) => (
+                      <option key={key} value={key}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
 
-            <div className="field-grid field-grid-two">
-              <label className="form-field">
-                <span>Material finish</span>
-                <select
-                  name="material"
-                  value={formData.material}
-                  onChange={handleChange}
-                >
-                  {Object.entries(materialOptions).map(([key, option]) => (
-                    <option key={key} value={key}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-              </label>
+                <label className="form-field">
+                  <span>Material finish</span>
+                  <select
+                    name="material"
+                    value={formData.material}
+                    onChange={handleChange}
+                  >
+                    {Object.entries(materialOptions).map(([key, option]) => (
+                      <option key={key} value={key}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
 
-              <label className="form-field">
-                <span>Execution speed</span>
-                <select
-                  name="urgency"
-                  value={formData.urgency}
-                  onChange={handleChange}
-                >
-                  {Object.entries(urgencyOptions).map(([key, option]) => (
-                    <option key={key} value={key}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-              </label>
+                <label className="form-field">
+                  <span>Execution speed</span>
+                  <select
+                    name="urgency"
+                    value={formData.urgency}
+                    onChange={handleChange}
+                  >
+                    {Object.entries(urgencyOptions).map(([key, option]) => (
+                      <option key={key} value={key}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
             </div>
 
             <div className="checkbox-fieldset">
               <div className="checkbox-header">
-                <span>Project scope</span>
-                <p>Turn on the spaces you want included in the quote.</p>
+                <h4>
+                  <FiLayers /> Add-on spaces
+                </h4>
+                <p>Select the additional rooms you want to include</p>
               </div>
 
               <div className="checkbox-grid">
@@ -261,9 +300,7 @@ function Estimator() {
                     <span className="checkbox-mark" />
                     <div>
                       <strong>{option.label}</strong>
-                      <small>
-                        Adds timeline and budget based on selected scope
-                      </small>
+                      <small>Adds timeline and budget based on scope</small>
                     </div>
                   </label>
                 ))}
@@ -274,10 +311,12 @@ function Estimator() {
 
         <div className="estimator-panel estimator-results-panel">
           <div className="panel-heading">
-            <span>Estimate output</span>
+            <span>
+              <FiTrendingUp /> Your estimate
+            </span>
             <h2>
               {estimate.hasValidArea
-                ? `${formatCurrency(estimate.estimatedLow)} - ${formatCurrency(
+                ? `${formatCurrency(estimate.estimatedLow)} — ${formatCurrency(
                     estimate.estimatedHigh
                   )}`
                 : "Waiting for dimensions"}
@@ -291,25 +330,34 @@ function Estimator() {
 
           <div className="results-grid">
             <article className="result-stat-card">
-              <p>Total planning area</p>
-              <strong>
-                {estimate.hasValidArea
-                  ? `${estimate.area.toLocaleString("en-IN")} sq ft`
-                  : "--"}
-              </strong>
-              <span>{estimate.selectedHome.rooms}</span>
+              <FiHome />
+              <div>
+                <p>Total planning area</p>
+                <strong>
+                  {estimate.hasValidArea
+                    ? `${estimate.area.toLocaleString("en-IN")} sq ft`
+                    : "--"}
+                </strong>
+                <span>{estimate.selectedHome.rooms}</span>
+              </div>
             </article>
             <article className="result-stat-card">
-              <p>Expected project time</p>
-              <strong>{estimate.weekRange}</strong>
-              <span>{estimate.installRange}</span>
+              <FiCalendar />
+              <div>
+                <p>Expected project time</p>
+                <strong>{estimate.weekRange}</strong>
+                <span>{estimate.installRange}</span>
+              </div>
             </article>
             <article className="result-stat-card">
-              <p>Workshop + install team</p>
-              <strong>
-                {estimate.teamSize ? `${estimate.teamSize} people` : "--"}
-              </strong>
-              <span>Carpentry, polish, fitting, supervision</span>
+              <FiUsers />
+              <div>
+                <p>Workshop + install team</p>
+                <strong>
+                  {estimate.teamSize ? `${estimate.teamSize} people` : "--"}
+                </strong>
+                <span>Carpentry, polish, fitting, supervision</span>
+              </div>
             </article>
           </div>
 
@@ -331,7 +379,7 @@ function Estimator() {
               <strong>{formatCurrency(estimate.designAndInstall)}</strong>
             </div>
             <div className="summary-line total-line">
-              <span>Estimated investment</span>
+              <span>Total estimated investment</span>
               <strong>{formatCurrency(estimate.totalEstimate)}</strong>
             </div>
           </div>
@@ -341,20 +389,21 @@ function Estimator() {
               <span key={addon.key}>{addon.label}</span>
             ))}
             {!estimate.selectedAddons.length ? (
-              <span>Choose add-ons to expand the quote</span>
+              <span className="empty-tag">Select add-ons to expand scope</span>
             ) : null}
           </div>
         </div>
       </section>
 
+      {/* Detail Grid */}
       <section className="estimator-detail-grid">
         <article className="detail-card">
           <div className="panel-heading">
-            <span>Budget split</span>
-            <h2>Where the estimate usually goes</h2>
-            <p>
-              A high-level breakdown to help you understand major spend zones.
-            </p>
+            <span>
+              <FiDollarSign /> Budget breakdown
+            </span>
+            <h2>Where your investment goes</h2>
+            <p>A transparent view of how costs are distributed across your project.</p>
           </div>
 
           <div className="breakdown-list">
@@ -363,7 +412,7 @@ function Estimator() {
                 <div className="breakdown-header">
                   <div>
                     <strong>{item.label}</strong>
-                    <span>{item.share.toFixed(0)}% of estimated budget</span>
+                    <span>{item.share.toFixed(0)}% of total</span>
                   </div>
                   <p>{formatCurrency(item.amount)}</p>
                 </div>
@@ -377,17 +426,17 @@ function Estimator() {
 
         <article className="detail-card">
           <div className="panel-heading">
-            <span>Milestone plan</span>
-            <h2>How a full-home project typically moves</h2>
-            <p>
-              Use this as a planning guide before the final site visit and quote.
-            </p>
+            <span>
+              <FiClock /> Milestone plan
+            </span>
+            <h2>Project journey timeline</h2>
+            <p>Typical flow for a full-home furniture project.</p>
           </div>
 
           <div className="milestone-list">
-            {estimate.milestonePlan.map((milestone) => (
+            {estimate.milestonePlan.map((milestone, idx) => (
               <div key={milestone.label} className="milestone-card">
-                <div className="milestone-step">{milestone.share}</div>
+                <div className="milestone-step">{idx + 1}</div>
                 <div className="milestone-content">
                   <strong>{milestone.label}</strong>
                   <span>{milestone.detail}</span>
@@ -399,36 +448,41 @@ function Estimator() {
         </article>
       </section>
 
+      {/* Notes Section */}
       <section className="estimator-notes">
         <article className="note-card">
           <div className="panel-heading">
-            <span>Included in planning</span>
-            <h2>What this estimate is useful for</h2>
+            <span>
+              <FiCheckCircle /> What's included
+            </span>
+            <h2>Planning benefits</h2>
           </div>
           <ul className="note-list">
             <li>
               <FiCheckCircle /> Budget planning before final design approval
             </li>
             <li>
-              <FiCheckCircle /> Comparing practical vs premium finishing choices
+              <FiCheckCircle /> Compare practical vs premium finishing choices
             </li>
             <li>
-              <FiCheckCircle /> Understanding how project scope affects timeline
+              <FiCheckCircle /> Understand how project scope affects timeline
             </li>
             <li>
-              <FiCheckCircle /> Preparing for workshop, delivery, and install
+              <FiCheckCircle /> Prepare for workshop, delivery, and installation
             </li>
           </ul>
         </article>
 
         <article className="note-card note-card-accent">
           <div className="panel-heading">
-            <span>Best next step</span>
-            <h2>Turn the estimate into a final design plan</h2>
+            <span>
+              <FiTrendingUp /> Next steps
+            </span>
+            <h2>Ready to bring your vision to life?</h2>
             <p>
-              Final pricing can change after site measurements, finish samples,
-              and hardware selections. This page is designed to give you a
-              confident planning range.
+              This estimate gives you a confident starting point. Our team will
+              refine it with site measurements, material samples, and your
+              personal preferences.
             </p>
           </div>
 
@@ -438,14 +492,14 @@ function Estimator() {
               className="estimator-primary-button"
               onClick={() => navigate("/contact")}
             >
-              Contact Our Team <FiArrowRight />
+              Schedule consultation <FiArrowRight />
             </button>
             <button
               type="button"
               className="estimator-secondary-button"
               onClick={() => navigate("/products")}
             >
-              Browse Collections <FiLayers />
+              Browse collections <FiLayers />
             </button>
           </div>
         </article>
