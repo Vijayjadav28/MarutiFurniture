@@ -21,11 +21,12 @@
 .admin-orders-header__eyebrow,
 .admin-order-card__eyebrow {
   margin: 0 0 0.45rem;
-  color: #5f7065;
-  font-size: 0.74rem;
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
+  font-size: 20px;
+
+  color: white;
 }
 
 .admin-orders-header h1 {

@@ -32,14 +32,17 @@ function OrdersPage() {
       try {
         const ordersQuery = query(
           collection(db, "orders"),
-          where("userId", "==", currentUser.uid)
+          where("userId", "==", currentUser.uid),
         );
         const snapshot = await getDocs(ordersQuery);
         const list = snapshot.docs
           .map((orderDoc) =>
-            normalizeOrderData({ id: orderDoc.id, ...orderDoc.data() })
+            normalizeOrderData({ id: orderDoc.id, ...orderDoc.data() }),
           )
-          .sort((a, b) => (b.createdAt?.getTime() || 0) - (a.createdAt?.getTime() || 0));
+          .sort(
+            (a, b) =>
+              (b.createdAt?.getTime() || 0) - (a.createdAt?.getTime() || 0),
+          );
 
         setOrders(list);
       } catch (error) {
@@ -55,8 +58,9 @@ function OrdersPage() {
   const stats = useMemo(() => {
     return {
       total: orders.length,
-      active: orders.filter((order) => !["Delivered", "Cancelled"].includes(order.status))
-        .length,
+      active: orders.filter(
+        (order) => !["Delivered", "Cancelled"].includes(order.status),
+      ).length,
       delivered: orders.filter((order) => order.status === "Delivered").length,
     };
   }, [orders]);
@@ -76,8 +80,8 @@ function OrdersPage() {
       <header className="orders-hero">
         <div className="orders-shell">
           <p className="orders-hero__eyebrow">Order tracking</p>
-          <h1>Track every order, address, and delivery status in one place.</h1>
-          <p className="orders-hero__sub">
+          <h1>Track Order</h1>
+          <p className="orders-hero__sub"> 
             Follow progress from approval to shipping and delivery with a
             cleaner customer experience.
           </p>
@@ -151,7 +155,10 @@ function OrdersPage() {
 
                   <div className="order-items-list">
                     {order.items.map((line, index) => (
-                      <div key={`${order.id}-${index}`} className="order-item-row">
+                      <div
+                        key={`${order.id}-${index}`}
+                        className="order-item-row"
+                      >
                         <div className="order-item-row__image">
                           {line.image ? (
                             <img src={line.image} alt={line.name} />
@@ -162,7 +169,8 @@ function OrdersPage() {
                         <div>
                           <strong>{line.name}</strong>
                           <span>
-                            Qty {line.quantity} • {formatOrderCurrency(line.price)}
+                            Qty {line.quantity} •{" "}
+                            {formatOrderCurrency(line.price)}
                           </span>
                         </div>
                       </div>
@@ -185,8 +193,8 @@ function OrdersPage() {
                           step.current
                             ? "order-timeline__step current"
                             : step.done
-                            ? "order-timeline__step done"
-                            : "order-timeline__step"
+                              ? "order-timeline__step done"
+                              : "order-timeline__step"
                         }
                       >
                         <div className="order-timeline__dot" />

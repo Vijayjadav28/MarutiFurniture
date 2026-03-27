@@ -17,6 +17,7 @@ import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
 import { BsArrowLeft } from "react-icons/bs";
 import "./Cart.css";
 import { useNavigate } from "react-router-dom";
+import CheckoutModal from "../Orders/CheckoutModal"
 
 function Cart() {
   const [cartItems, setCartItems] = useState([]);

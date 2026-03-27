@@ -104,12 +104,9 @@ function AdminOrders() {
       <div className="admin-orders-shell">
         <div className="admin-orders-header">
           <div>
-            <p className="admin-orders-header__eyebrow">Admin order control</p>
+            <p className="admin-orders-header__eyebrow">Admin orders</p>
             <h1>Track, approve, ship, and deliver customer orders.</h1>
-            <p>
-              Update every order status from one place while keeping customer
-              tracking in sync.
-            </p>
+          
           </div>
 
           <button type="button" onClick={() => navigate("/profile/admin/admindashboard")}>
