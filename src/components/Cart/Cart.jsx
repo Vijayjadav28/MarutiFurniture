@@ -7,8 +7,6 @@ import {
   deleteDoc,
   doc,
   updateDoc,
-  addDoc,
-  getDoc,
   writeBatch,
 } from "firebase/firestore";
 import { db } from "../../libs/firebase";
@@ -19,12 +17,13 @@ import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
 import { BsArrowLeft } from "react-icons/bs";
 import "./Cart.css";
 import { useNavigate } from "react-router-dom";
-import { createOrderNumber } from "../../utils/orderUtils";
+import CheckoutModal from "../Orders/CheckoutModal";
+import { computeOrderShipping, formatOrderCurrency } from "../../utils/orderUtils";
 
 function Cart() {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [placingOrder, setPlacingOrder] = useState(false);
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
   const navigate = useNavigate();
   const { currentUser } = useAuth();
 
@@ -40,7 +39,7 @@ function Cart() {
   };
 
   const calculateShipping = (subtotal) => {
-    return subtotal >= 50000 ? 0 : 5000;
+    return computeOrderShipping(subtotal);
   };
 
   const fetchCart = useCallback(async () => {
@@ -109,8 +108,7 @@ function Cart() {
     }
   };
 
-  // 🔹 Cash on Delivery
-  const handleCOD = async () => {
+  const openCheckout = () => {
     if (!currentUser) {
       alert("Please login to place an order.");
       navigate("/signin");
@@ -122,131 +120,7 @@ function Cart() {
       return;
     }
 
-    setPlacingOrder(true);
-
-    try {
-      // Fetch user profile for address
-      const userRef = doc(db, "users", currentUser.uid);
-      const userSnap = await getDoc(userRef);
-      const userData = userSnap.exists() ? userSnap.data() : {};
-
-      // Check if user has address
-      const hasAddress = userData.address && userData.city && userData.phone;
-      
-      if (!hasAddress) {
-        alert("Please update your profile with delivery address before placing order.");
-        navigate("/profile");
-        setPlacingOrder(false);
-        return;
-      }
-
-      const subtotal = calculateSubtotal();
-      const shipping = calculateShipping(subtotal);
-      const total = subtotal + shipping;
-      const createdAt = new Date();
-
-      const orderPayload = {
-        orderNumber: createOrderNumber(),
-        userId: currentUser.uid,
-        userEmail: currentUser.email || "",
-        customerName: userData.displayName || currentUser.displayName || "Customer",
-        customerPhone: userData.phone || "",
-        shippingAddress: {
-          fullName: userData.displayName || currentUser.displayName || "",
-          phone: userData.phone || "",
-          address: userData.address || "",
-          city: userData.city || "",
-          state: userData.state || "",
-          zipCode: userData.zipCode || "",
-          country: userData.country || "India",
-          landmark: userData.landmark || "",
-        },
-        items: cartItems.map((item) => ({
-          productId: item.productId || item.id || item.name,
-          name: item.name,
-          quantity: item.quantity,
-          price: item.price,
-          image: item.img?.[0] || "",
-          color: item.color || "",
-          catid: item.catid || "",
-        })),
-        subtotal,
-        shipping,
-        total,
-        paymentMethod: "Cash on Delivery",
-        paymentStatus: "Pending on delivery",
-        status: "Awaiting Approval",
-        statusHistory: [
-          {
-            status: "Awaiting Approval",
-            note: "Customer placed order with Cash on Delivery.",
-            createdAt,
-          },
-        ],
-        createdAt,
-        updatedAt: createdAt,
-      };
-
-      await addDoc(collection(db, "orders"), orderPayload);
-      
-      // Clear the cart after successful order
-      await clearCart();
-      
-      alert("Order placed successfully! Pay on delivery.");
-      navigate("/orders");
-    } catch (error) {
-      console.error("Error saving order:", error);
-      alert("Failed to place order. Please try again.");
-    } finally {
-      setPlacingOrder(false);
-    }
-  };
-
-  // 🔹 Online Payment with Razorpay
-  const handlePayment = async () => {
-    try {
-      const res = await fetch("http://localhost:5000/create-order", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          amount:
-            calculateSubtotal() + calculateShipping(calculateSubtotal()),
-        }),
-      });
-
-      const order = await res.json();
-
-      const options = {
-        key: "YOUR_KEY_ID", // Replace with Razorpay key
-        amount: order.amount,
-        currency: "INR",
-        name: "Maruti Furniture",
-        description: "Furniture Purchase",
-        order_id: order.id,
-        handler: async function (response) {
-          await addDoc(collection(db, "payments"), {
-            userId: currentUser.uid,
-            items: cartItems,
-            amount: order.amount / 100,
-            paymentId: response.razorpay_payment_id,
-            status: "success",
-            createdAt: new Date(),
-          });
-          alert("Payment successful!");
-          navigate("/orders");
-        },
-        prefill: {
-          name: currentUser?.displayName || "Customer",
-          email: currentUser?.email || "test@example.com",
-        },
-        theme: { color: "#28a745" },
-      };
-
-      const rzp = new window.Razorpay(options);
-      rzp.open();
-    } catch (error) {
-      console.error("Payment error:", error);
-    }
+    setCheckoutOpen(true);
   };
 
   return (
@@ -351,7 +225,7 @@ function Cart() {
                   Subtotal ({calculateTotalItems()}{" "}
                   {calculateTotalItems() === 1 ? "item" : "items"})
                 </span>
-                <span>₹{calculateSubtotal().toLocaleString("en-IN")}</span>
+                <span>{formatOrderCurrency(calculateSubtotal())}</span>
               </div>
               <div className="summary-row">
                 <span>Shipping</span>
@@ -359,7 +233,7 @@ function Cart() {
                   {calculateSubtotal() >= 50000 ? (
                     <span className="free-shipping">FREE</span>
                   ) : (
-                    `₹${(5000).toLocaleString("en-IN")}`
+                    formatOrderCurrency(calculateShipping(calculateSubtotal()))
                   )}
                 </span>
               </div>
@@ -372,31 +246,19 @@ function Cart() {
               <div className="summary-row total">
                 <span>Total</span>
                 <span>
-                  ₹
-                  {(
-                    calculateSubtotal() +
-                    calculateShipping(calculateSubtotal())
-                  ).toLocaleString("en-IN")}
+                  {formatOrderCurrency(
+                    calculateSubtotal() + calculateShipping(calculateSubtotal())
+                  )}
                 </span>
               </div>
 
-              {/* COD Button */}
-              <button 
-                className="checkout-btn" 
-                onClick={handleCOD}
-                disabled={placingOrder}
-              >
-                {placingOrder ? "Placing Order..." : "Place Order (Cash on Delivery)"}
+              <button className="checkout-btn" onClick={openCheckout}>
+                Proceed to checkout
               </button>
 
-              {/* Online Payment Button */}
-              <button
-                className="checkout-btn"
-                style={{ backgroundColor: "#28a745", marginTop: "10px" }}
-                onClick={handlePayment}
-              >
-                Pay Online (Razorpay)
-              </button>
+              <p className="checkout-helper">
+                Choose Cash on Delivery or Demo Online Card in the next step.
+              </p>
 
               <div className="payment-methods">
                 <p>We accept:</p>
@@ -411,6 +273,14 @@ function Cart() {
           </div>
         )}
       </div>
+
+      <CheckoutModal
+        isOpen={checkoutOpen}
+        items={cartItems}
+        currentUser={currentUser}
+        onClose={() => setCheckoutOpen(false)}
+        onOrderPlaced={clearCart}
+      />
     </div>
   );
 }

@@ -115,6 +115,33 @@
   color: rgba(247, 252, 248, 0.78);
 }
 
+.checkout-order-lines {
+  display: grid;
+  gap: 0.8rem;
+  margin-top: 1.4rem;
+}
+
+.checkout-order-line {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.9rem 1rem;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.checkout-order-line strong {
+  display: block;
+}
+
+.checkout-order-line span {
+  display: block;
+  margin-top: 0.2rem;
+  color: rgba(247, 252, 248, 0.74);
+  line-height: 1.5;
+}
+
 .checkout-price-breakup,
 .checkout-step-list {
   display: grid;
