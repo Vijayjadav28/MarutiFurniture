@@ -17,11 +17,19 @@ import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
 import { BsArrowLeft } from "react-icons/bs";
 import "./Cart.css";
 import { useNavigate } from "react-router-dom";
+
 import CheckoutModal from "../Orders/CheckoutModal"
+
+import CheckoutModal from "../Orders/CheckoutModal";
+import { computeOrderShipping, formatOrderCurrency } from "../../utils/orderUtils";
+
 
 function Cart() {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
+
+
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
   const navigate = useNavigate();
   const { currentUser } = useAuth();
 
@@ -37,7 +45,7 @@ function Cart() {
   };
 
   const calculateShipping = (subtotal) => {
-    return subtotal >= 50000 ? 0 : 5000;
+    return computeOrderShipping(subtotal);
   };
 
   const fetchCart = useCallback(async () => {
@@ -157,6 +165,35 @@ function Cart() {
     } catch (error) {
       console.error("Payment error:", error);
     }
+=======
+  // Clear cart after successful order
+  const clearCart = async () => {
+    try {
+      const batch = writeBatch(db);
+      cartItems.forEach((item) => {
+        const itemRef = doc(db, "cart", item.id);
+        batch.delete(itemRef);
+      });
+      await batch.commit();
+      setCartItems([]);
+    } catch (error) {
+      console.error("Error clearing cart:", error);
+    }
+  };
+
+  const openCheckout = () => {
+    if (!currentUser) {
+      alert("Please login to place an order.");
+      navigate("/signin");
+      return;
+    }
+
+    if (cartItems.length === 0) {
+      alert("Your cart is empty!");
+      return;
+    }
+
+    setCheckoutOpen(true);
   };
 
   return (
@@ -261,7 +298,7 @@ function Cart() {
                   Subtotal ({calculateTotalItems()}{" "}
                   {calculateTotalItems() === 1 ? "item" : "items"})
                 </span>
-                <span>₹{calculateSubtotal().toLocaleString("en-IN")}</span>
+                <span>{formatOrderCurrency(calculateSubtotal())}</span>
               </div>
               <div className="summary-row">
                 <span>Shipping</span>
@@ -269,7 +306,7 @@ function Cart() {
                   {calculateSubtotal() >= 50000 ? (
                     <span className="free-shipping">FREE</span>
                   ) : (
-                    `₹${(5000).toLocaleString("en-IN")}`
+                    formatOrderCurrency(calculateShipping(calculateSubtotal()))
                   )}
                 </span>
               </div>
@@ -282,27 +319,24 @@ function Cart() {
               <div className="summary-row total">
                 <span>Total</span>
                 <span>
-                  ₹
-                  {(
-                    calculateSubtotal() +
-                    calculateShipping(calculateSubtotal())
-                  ).toLocaleString("en-IN")}
+                  {formatOrderCurrency(
+                    calculateSubtotal() + calculateShipping(calculateSubtotal())
+                  )}
                 </span>
               </div>
+
 
               {/* COD Button */}
               <button className="checkout-btn" onClick={handleCOD}>
                 Place Order (Cash on Delivery)
+              <button className="checkout-btn" onClick={openCheckout}>
+                Proceed to checkout
+
               </button>
 
-              {/* Online Payment Button */}
-              <button
-                className="checkout-btn"
-                style={{ backgroundColor: "#28a745", marginTop: "10px" }}
-                onClick={handlePayment}
-              >
-                Pay Online (Razorpay)
-              </button>
+              <p className="checkout-helper">
+                Choose Cash on Delivery or Demo Online Card in the next step.
+              </p>
 
               <div className="payment-methods">
                 <p>We accept:</p>
@@ -317,6 +351,14 @@ function Cart() {
           </div>
         )}
       </div>
+
+      <CheckoutModal
+        isOpen={checkoutOpen}
+        items={cartItems}
+        currentUser={currentUser}
+        onClose={() => setCheckoutOpen(false)}
+        onOrderPlaced={clearCart}
+      />
     </div>
   );
 }

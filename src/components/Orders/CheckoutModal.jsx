@@ -23,7 +23,25 @@ import {
 } from "../../utils/orderUtils";
 import "./CheckoutModal.css";
 
-function CheckoutModal({ isOpen, item, currentUser, onClose }) {
+function formatCheckoutError(error) {
+  if (
+    error?.code === "permission-denied" ||
+    /Missing or insufficient permissions/i.test(error?.message || "")
+  ) {
+    return "Order creation is blocked by the current Firestore rules. Deploy the updated rules and try again.";
+  }
+
+  return "Failed to place order. Please try again.";
+}
+
+function CheckoutModal({
+  isOpen,
+  item,
+  items,
+  currentUser,
+  onClose,
+  onOrderPlaced,
+}) {
   const navigate = useNavigate();
   const [step, setStep] = useState("address");
   const [loadingProfile, setLoadingProfile] = useState(false);
@@ -40,11 +58,61 @@ function CheckoutModal({ isOpen, item, currentUser, onClose }) {
   });
   const [placedOrder, setPlacedOrder] = useState(null);
 
-  const subtotal = Number(item?.price) || 0;
+  const sourceItems = useMemo(() => {
+    const sourceItems =
+      Array.isArray(items) && items.length > 0 ? items : item ? [item] : [];
+
+    return sourceItems.map((entry, index) => {
+      const images = Array.isArray(entry?.img)
+        ? entry.img
+        : entry?.image
+        ? [entry.image]
+        : [];
+
+      return {
+        productId: entry?.productId || entry?.id || entry?.name || `item-${index + 1}`,
+        name: entry?.name || "Product",
+        quantity: Number(entry?.quantity) || 1,
+        price: Number(entry?.price) || 0,
+        image: images[0] || "",
+        color: entry?.color || "",
+        catid: entry?.catid || entry?.prodid || entry?.category || "",
+      };
+    });
+  }, [item, items]);
+  const checkoutItems =
+    placedOrder?.items?.length > 0 ? placedOrder.items : sourceItems;
+
+  const subtotal = useMemo(
+    () =>
+      checkoutItems.reduce(
+        (runningTotal, line) => runningTotal + line.price * line.quantity,
+        0
+      ),
+    [checkoutItems]
+  );
   const shipping = computeOrderShipping(subtotal);
   const total = subtotal + shipping;
-
-  const primaryImage = useMemo(() => item?.img?.[0] || "", [item]);
+  const totalItems = useMemo(
+    () =>
+      checkoutItems.reduce(
+        (runningCount, line) => runningCount + line.quantity,
+        0
+      ),
+    [checkoutItems]
+  );
+  const hasCheckoutItems = checkoutItems.length > 0;
+  const primaryImage = checkoutItems[0]?.image || "";
+  const sidebarTitle =
+    checkoutItems.length === 1
+      ? checkoutItems[0]?.name || "Order item"
+      : `${totalItems} items from your cart`;
+  const sidebarMeta =
+    checkoutItems.length === 1
+      ? [checkoutItems[0]?.color, checkoutItems[0]?.catid]
+          .filter(Boolean)
+          .join(" • ")
+      : "Every item below will be included in one order.";
 
   useEffect(() => {
     if (!isOpen) {
@@ -107,7 +175,7 @@ function CheckoutModal({ isOpen, item, currentUser, onClose }) {
     };
   }, [currentUser, isOpen]);
 
-  if (!isOpen || !item) {
+  if (!isOpen || (!hasCheckoutItems && !placedOrder)) {
     return null;
   }
 
@@ -197,17 +265,7 @@ function CheckoutModal({ isOpen, item, currentUser, onClose }) {
         customerName: address.fullName,
         customerPhone: address.phone,
         shippingAddress: address,
-        items: [
-          {
-            productId: item.id || item.name,
-            name: item.name,
-            quantity: 1,
-            price: subtotal,
-            image: primaryImage,
-            color: item.color,
-            catid: item.catid,
-          },
-        ],
+        items: checkoutItems,
         subtotal,
         shipping,
         total,
@@ -230,10 +288,20 @@ function CheckoutModal({ isOpen, item, currentUser, onClose }) {
       };
 
       const orderRef = await addDoc(collection(db, "orders"), orderPayload);
-      setPlacedOrder({ id: orderRef.id, ...orderPayload });
+      const savedOrder = { id: orderRef.id, ...orderPayload };
+      setPlacedOrder(savedOrder);
       setStep("success");
+
+      if (typeof onOrderPlaced === "function") {
+        try {
+          await onOrderPlaced(savedOrder);
+        } catch (postOrderError) {
+          console.error("Post-order action failed:", postOrderError);
+        }
+      }
     } catch (error) {
       console.error("Failed to place order:", error);
+      setNotice(formatCheckoutError(error));
     } finally {
       setSubmitting(false);
     }
@@ -264,7 +332,7 @@ function CheckoutModal({ isOpen, item, currentUser, onClose }) {
           <div className="checkout-product-card">
             <div className="checkout-product-card__image-wrap">
               {primaryImage ? (
-                <img src={primaryImage} alt={item.name} />
+                <img src={primaryImage} alt={sidebarTitle} />
               ) : (
                 <div className="checkout-product-card__placeholder">
                   <FiPackage />
@@ -274,12 +342,27 @@ function CheckoutModal({ isOpen, item, currentUser, onClose }) {
 
             <div>
               <p className="checkout-eyebrow">Order summary</p>
-              <h3>{item.name}</h3>
-              <p className="checkout-product-meta">
-                {item.color} • {item.catid}
-              </p>
+              <h3>{sidebarTitle}</h3>
+              <p className="checkout-product-meta">{sidebarMeta}</p>
             </div>
           </div>
+
+          {checkoutItems.length > 1 ? (
+            <div className="checkout-order-lines">
+              {checkoutItems.map((line) => (
+                <div key={`${line.productId}-${line.name}`} className="checkout-order-line">
+                  <div>
+                    <strong>{line.name}</strong>
+                    <span>
+                      Qty {line.quantity}
+                      {line.catid ? ` • ${line.catid}` : ""}
+                    </span>
+                  </div>
+                  <strong>{formatOrderCurrency(line.price * line.quantity)}</strong>
+                </div>
+              ))}
+            </div>
+          ) : null}
 
           <div className="checkout-price-breakup">
             <div>
