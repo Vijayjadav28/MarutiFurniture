@@ -24,6 +24,7 @@ import {
   materialOptions,
   packageOptions,
   urgencyOptions,
+  LABOR_ONLY_RATE,
 } from "../../utils/estimatorUtils";
 
 function Estimator() {
@@ -305,6 +306,38 @@ function Estimator() {
                   </label>
                 ))}
               </div>
+            </div>
+
+            <div className="checkbox-fieldset labor-only-section">
+              <div className="checkbox-header">
+                <h4>
+                  <FiDollarSign /> Labor Only Option
+                </h4>
+                <p>Get only labor charges without material (₹{LABOR_ONLY_RATE}/sqft)</p>
+              </div>
+              <label className="checkbox-card labor-card">
+                <input
+                  type="checkbox"
+                  name="laborOnly"
+                  checked={Boolean(formData.laborOnly)}
+                  onChange={handleChange}
+                />
+                <span className="checkbox-mark" />
+                <div>
+                  <strong>Labor Only (₹{LABOR_ONLY_RATE}/sqft)</strong>
+                  <small>Only carpentry and installation labor, no material cost</small>
+                </div>
+              </label>
+            </div>
+
+            {/* Show furniture items included for selected home type */}
+            <div className="furniture-items-section">
+              <h4><FiPackage /> Furniture Included in {estimate.selectedHome.label}</h4>
+              <ul className="furniture-items-list">
+                {estimate.selectedHome.furnitureItems?.map((item, idx) => (
+                  <li key={idx}><FiCheckCircle /> {item}</li>
+                ))}
+              </ul>
             </div>
           </form>
         </div>

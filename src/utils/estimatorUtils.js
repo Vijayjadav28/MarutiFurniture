@@ -1,24 +1,26 @@
+// Package options with rates per sqft (with material)
 export const packageOptions = {
   essential: {
     label: "Essential setup",
     ratePerSqft: 950,
-    baseWeeks: 2,
+    baseWeeks: 6,
     note: "Best for practical homes, rentals, or a phased upgrade.",
   },
   comfort: {
     label: "Comfort plus",
-    ratePerSqft: 1450,
-    baseWeeks: 4,
-    note: "Balanced finish, better hardware, and the most popular choice.",
+    ratePerSqft: 1500,
+    baseWeeks: 8,
+    note: "Medium level finish - includes Veneer, MDF-Lacker, Glass Acrylic.",
   },
   luxury: {
     label: "Signature luxury",
     ratePerSqft: 2100,
-    baseWeeks: 6,
+    baseWeeks: 10,
     note: "Premium detailing for statement homes and designer finishes.",
   },
 };
 
+// Material options - Veneer (Veneer Polish), MDF (MDF-Lacker), Kitchen (Glass Acrylic)
 export const materialOptions = {
   laminate: {
     label: "Laminate and ply",
@@ -26,45 +28,85 @@ export const materialOptions = {
     timelineWeeks: 0,
   },
   veneer: {
-    label: "Veneer finish",
+    label: "Veneer (Veneer Polish)",
     multiplier: 1.12,
     timelineWeeks: 1,
   },
+  mdf_lacker: {
+    label: "MDF (MDF-Lacker)",
+    multiplier: 1.18,
+    timelineWeeks: 1,
+  },
+  glass_acrylic: {
+    label: "Glass Acrylic (Kitchen)",
+    multiplier: 1.25,
+    timelineWeeks: 2,
+  },
   solidwood: {
     label: "Solid wood accents",
-    multiplier: 1.28,
+    multiplier: 1.35,
     timelineWeeks: 2,
   },
 };
 
+// Home options with specific furniture items
+// 1BHK: 1 bed, 1 kabat (wardrobe), 1 dressing
+// 2BHK: 2 bed, 2 kabat, 2 dressing  
+// 3BHK: 3 bed, 3 kabat, 3 dressing + Living area (TV unit, sofa) + Kitchen (platform, storage, chimney box)
 export const homeOptions = {
   compact: {
-    label: "Compact home",
-    rooms: "1 BHK / studio",
+    label: "1 BHK",
+    rooms: "1 BHK (1 Bedroom)",
     roomCount: 1,
-    fixedCost: 35000,
-    timelineWeeks: 0,
+    fixedCost: 85000,
+    timelineWeeks: 4,
+    furnitureItems: [
+      "1 Bed",
+      "1 Wardrobe (Kabat)",
+      "1 Dressing Table",
+    ],
   },
   family: {
-    label: "Family home",
-    rooms: "2 BHK",
+    label: "2 BHK",
+    rooms: "2 BHK (2 Bedrooms)",
     roomCount: 2,
-    fixedCost: 85000,
-    timelineWeeks: 1,
+    fixedCost: 165000,
+    timelineWeeks: 6,
+    furnitureItems: [
+      "2 Beds",
+      "2 Wardrobes (Kabat)",
+      "2 Dressing Tables",
+      "Living Area - TV Unit, Sofa",
+    ],
   },
   premium: {
-    label: "Large family home",
-    rooms: "3 BHK",
+    label: "3 BHK",
+    rooms: "3 BHK (3 Bedrooms)",
     roomCount: 3,
-    fixedCost: 140000,
-    timelineWeeks: 2,
+    fixedCost: 280000,
+    timelineWeeks: 8,
+    furnitureItems: [
+      "3 Beds",
+      "3 Wardrobes (Kabat)",
+      "3 Dressing Tables",
+      "Living Area - TV Unit, Sofa",
+      "Kitchen - Platform, Storage, Chimney Box",
+    ],
   },
   villa: {
-    label: "Villa or duplex",
-    rooms: "4+ BHK",
+    label: "4+ BHK / Villa",
+    rooms: "4+ BHK / Villa / Duplex",
     roomCount: 4,
-    fixedCost: 220000,
-    timelineWeeks: 3,
+    fixedCost: 420000,
+    timelineWeeks: 10,
+    furnitureItems: [
+      "4+ Beds",
+      "4+ Wardrobes (Kabat)",
+      "4+ Dressing Tables",
+      "Living Area - TV Unit, Sofa",
+      "Kitchen - Platform, Storage, Chimney Box",
+      "Additional Rooms",
+    ],
   },
 };
 
@@ -72,55 +114,63 @@ export const urgencyOptions = {
   relaxed: {
     label: "Relaxed schedule",
     costMultiplier: 0.96,
-    timelineMultiplier: 1.12,
-    installationShift: 2,
+    timelineMultiplier: 1.15,
+    installationShift: 5,
   },
   standard: {
-    label: "Standard delivery",
+    label: "Standard (~70 days)",
     costMultiplier: 1,
     timelineMultiplier: 1,
     installationShift: 0,
   },
   fast: {
     label: "Fast-track execution",
-    costMultiplier: 1.1,
-    timelineMultiplier: 0.82,
-    installationShift: -3,
+    costMultiplier: 1.15,
+    timelineMultiplier: 0.8,
+    installationShift: -5,
   },
 };
 
 export const addonOptions = {
   kitchen: {
-    label: "Modular kitchen",
+    label: "Modular kitchen (Platform, Storage, Chimney Box)",
     timelineWeeks: 2,
-    getCost: (area, roomCount) => 140000 + roomCount * 18000 + area * 45,
+    getCost: (area, roomCount) => 180000 + roomCount * 20000 + area * 50,
   },
   wardrobes: {
-    label: "Bedroom wardrobes",
+    label: "Bedroom wardrobes (Kabat)",
     timelineWeeks: 2,
-    getCost: (area, roomCount) => roomCount * 52000 + area * 30,
+    getCost: (area, roomCount) => roomCount * 55000 + area * 35,
   },
   entertainment: {
-    label: "TV and display wall",
+    label: "TV Unit and Sofa area",
     timelineWeeks: 1,
-    getCost: (area) => 48000 + area * 12,
+    getCost: (area) => 65000 + area * 15,
   },
   study: {
     label: "Study or work nook",
     timelineWeeks: 1,
-    getCost: (area) => 42000 + area * 15,
+    getCost: (area) => 45000 + area * 18,
   },
   falseCeiling: {
     label: "False ceiling accents",
     timelineWeeks: 1,
-    getCost: (area) => 65000 + area * 18,
+    getCost: (area) => 70000 + area * 20,
+  },
+  dressing: {
+    label: "Dressing Tables",
+    timelineWeeks: 1,
+    getCost: (area, roomCount) => roomCount * 25000,
   },
 };
 
+// Labor only charge option - ₹350 per sqft
+export const LABOR_ONLY_RATE = 350;
+
 export const defaultEstimateForm = {
   length: "40",
-  width: "30",
-  homeType: "family",
+  width: "38",
+  homeType: "premium",
   packageType: "comfort",
   material: "veneer",
   urgency: "standard",
@@ -129,6 +179,8 @@ export const defaultEstimateForm = {
   entertainment: true,
   study: false,
   falseCeiling: true,
+  dressing: true,
+  laborOnly: false,
 };
 
 const currencyFormatter = new Intl.NumberFormat("en-IN", {
@@ -154,7 +206,7 @@ export const calculateEstimate = (formValues = defaultEstimateForm) => {
   const planningArea = hasValidArea ? Math.max(area, 450) : 0;
   const areaSquareMeters = area * 0.092903;
 
-  const selectedHome = homeOptions[values.homeType] ?? homeOptions.family;
+  const selectedHome = homeOptions[values.homeType] ?? homeOptions.premium;
   const selectedPackage =
     packageOptions[values.packageType] ?? packageOptions.comfort;
   const selectedMaterial =
@@ -171,6 +223,11 @@ export const calculateEstimate = (formValues = defaultEstimateForm) => {
       cost: addon.getCost(planningArea, selectedHome.roomCount),
     }));
 
+  // Labor only calculation (₹350/sqft)
+  const isLaborOnly = Boolean(values.laborOnly);
+  const laborOnlyCost = hasValidArea ? planningArea * LABOR_ONLY_RATE : 0;
+
+  // Full package calculation (₹1500/sqft with material for medium level)
   const packageBudget = hasValidArea
     ? planningArea * selectedPackage.ratePerSqft
     : 0;
@@ -181,21 +238,21 @@ export const calculateEstimate = (formValues = defaultEstimateForm) => {
     ? (packageBudget + selectedHome.fixedCost) *
       (selectedUrgency.costMultiplier - 1)
     : 0;
-  const addonBudget = selectedAddons.reduce(
-    (total, addon) => total + addon.cost,
-    0
-  );
+  const addonBudget = isLaborOnly 
+    ? 0 
+    : selectedAddons.reduce((total, addon) => total + addon.cost, 0);
   const designAndInstall = hasValidArea
-    ? Math.max(planningArea * 110, 35000)
+    ? Math.max(planningArea * 120, 40000)
     : 0;
 
-  const totalEstimate =
-    packageBudget +
-    materialBudget +
-    urgencyBudget +
-    addonBudget +
-    (hasValidArea ? selectedHome.fixedCost : 0) +
-    designAndInstall;
+  const totalEstimate = isLaborOnly
+    ? laborOnlyCost
+    : packageBudget +
+      materialBudget +
+      urgencyBudget +
+      addonBudget +
+      (hasValidArea ? selectedHome.fixedCost : 0) +
+      designAndInstall;
 
   const estimatedLow = totalEstimate * 0.92;
   const estimatedHigh = totalEstimate * 1.11;
@@ -205,43 +262,45 @@ export const calculateEstimate = (formValues = defaultEstimateForm) => {
     0
   );
 
+  // Timeline calculation - approximately 70 days (10 weeks) for standard
   const rawWeeks = hasValidArea
     ? (selectedPackage.baseWeeks +
         selectedHome.timelineWeeks +
         selectedMaterial.timelineWeeks +
-        addOnWeeks +
-        planningArea / 220) *
+        (isLaborOnly ? 0 : addOnWeeks) +
+        planningArea / 300) *
       selectedUrgency.timelineMultiplier
     : 0;
 
-  const estimatedWeeks = hasValidArea ? Math.max(4, Math.round(rawWeeks)) : 0;
+  const estimatedWeeks = hasValidArea ? Math.max(6, Math.round(rawWeeks)) : 0;
+  const estimatedDays = hasValidArea ? Math.round(estimatedWeeks * 7) : 0;
   const carpentryDays = hasValidArea
     ? Math.max(
-        12,
-        Math.round(estimatedWeeks * 5.5 + selectedUrgency.installationShift)
+        15,
+        Math.round(estimatedWeeks * 6 + selectedUrgency.installationShift)
       )
     : 0;
 
   const rawBreakdown = [
     {
-      label: "Living room and lounge",
-      weight: 0.22,
+      label: "Bedrooms (Beds, Wardrobes, Dressing)",
+      weight: values.wardrobes && values.dressing ? 0.35 : 0.20,
     },
     {
-      label: "Bedrooms and wardrobes",
-      weight: values.wardrobes ? 0.31 : 0.18,
+      label: "Living room (TV Unit, Sofa)",
+      weight: values.entertainment ? 0.18 : 0.10,
     },
     {
-      label: "Kitchen and dining",
-      weight: values.kitchen ? 0.24 : 0.1,
+      label: "Kitchen (Platform, Storage, Chimney)",
+      weight: values.kitchen ? 0.25 : 0.08,
     },
     {
       label: "Work corners and utility",
-      weight: values.study ? 0.11 : 0.07,
+      weight: values.study ? 0.10 : 0.05,
     },
     {
       label: "Finishing, transport and install",
-      weight: 0.12 + (values.falseCeiling ? 0.04 : 0) + (values.entertainment ? 0.03 : 0),
+      weight: 0.12 + (values.falseCeiling ? 0.05 : 0),
     },
   ];
 
@@ -278,10 +337,10 @@ export const calculateEstimate = (formValues = defaultEstimateForm) => {
   ];
 
   const weekRange = estimatedWeeks
-    ? `${Math.max(4, estimatedWeeks - 1)}-${estimatedWeeks + 2} weeks`
+    ? `${Math.max(6, estimatedWeeks - 1)}-${estimatedWeeks + 2} weeks (~${estimatedDays} days)`
     : "Add valid dimensions";
   const installRange = carpentryDays
-    ? `${Math.max(8, carpentryDays - 4)}-${carpentryDays} working days`
+    ? `${Math.max(12, carpentryDays - 5)}-${carpentryDays} working days`
     : "Waiting for dimensions";
   const startWindow =
     values.urgency === "fast"
@@ -312,10 +371,13 @@ export const calculateEstimate = (formValues = defaultEstimateForm) => {
     urgencyBudget,
     addonBudget,
     designAndInstall,
+    laborOnlyCost,
+    isLaborOnly,
     totalEstimate,
     estimatedLow,
     estimatedHigh,
     estimatedWeeks,
+    estimatedDays,
     weekRange,
     carpentryDays,
     installRange,

@@ -8,6 +8,8 @@ import {
   doc,
   updateDoc,
   addDoc,
+  getDoc,
+  writeBatch,
 } from "firebase/firestore";
 import { db } from "../../libs/firebase";
 import { useAuth } from "../../Context/AuthContext";
@@ -17,10 +19,12 @@ import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
 import { BsArrowLeft } from "react-icons/bs";
 import "./Cart.css";
 import { useNavigate } from "react-router-dom";
+import { createOrderNumber } from "../../utils/orderUtils";
 
 function Cart() {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [placingOrder, setPlacingOrder] = useState(false);
   const navigate = useNavigate();
   const { currentUser } = useAuth();
 
@@ -90,24 +94,111 @@ function Cart() {
     }
   };
 
+  // Clear cart after successful order
+  const clearCart = async () => {
+    try {
+      const batch = writeBatch(db);
+      cartItems.forEach((item) => {
+        const itemRef = doc(db, "cart", item.id);
+        batch.delete(itemRef);
+      });
+      await batch.commit();
+      setCartItems([]);
+    } catch (error) {
+      console.error("Error clearing cart:", error);
+    }
+  };
+
   // 🔹 Cash on Delivery
   const handleCOD = async () => {
+    if (!currentUser) {
+      alert("Please login to place an order.");
+      navigate("/signin");
+      return;
+    }
+
+    if (cartItems.length === 0) {
+      alert("Your cart is empty!");
+      return;
+    }
+
+    setPlacingOrder(true);
+
     try {
-      await addDoc(collection(db, "orders"), {
+      // Fetch user profile for address
+      const userRef = doc(db, "users", currentUser.uid);
+      const userSnap = await getDoc(userRef);
+      const userData = userSnap.exists() ? userSnap.data() : {};
+
+      // Check if user has address
+      const hasAddress = userData.address && userData.city && userData.phone;
+      
+      if (!hasAddress) {
+        alert("Please update your profile with delivery address before placing order.");
+        navigate("/profile");
+        setPlacingOrder(false);
+        return;
+      }
+
+      const subtotal = calculateSubtotal();
+      const shipping = calculateShipping(subtotal);
+      const total = subtotal + shipping;
+      const createdAt = new Date();
+
+      const orderPayload = {
+        orderNumber: createOrderNumber(),
         userId: currentUser.uid,
-        items: cartItems,
-        subtotal: calculateSubtotal(),
-        shipping: calculateShipping(calculateSubtotal()),
-        total:
-          calculateSubtotal() + calculateShipping(calculateSubtotal()),
+        userEmail: currentUser.email || "",
+        customerName: userData.displayName || currentUser.displayName || "Customer",
+        customerPhone: userData.phone || "",
+        shippingAddress: {
+          fullName: userData.displayName || currentUser.displayName || "",
+          phone: userData.phone || "",
+          address: userData.address || "",
+          city: userData.city || "",
+          state: userData.state || "",
+          zipCode: userData.zipCode || "",
+          country: userData.country || "India",
+          landmark: userData.landmark || "",
+        },
+        items: cartItems.map((item) => ({
+          productId: item.productId || item.id || item.name,
+          name: item.name,
+          quantity: item.quantity,
+          price: item.price,
+          image: item.img?.[0] || "",
+          color: item.color || "",
+          catid: item.catid || "",
+        })),
+        subtotal,
+        shipping,
+        total,
         paymentMethod: "Cash on Delivery",
-        status: "Pending",
-        createdAt: new Date(),
-      });
+        paymentStatus: "Pending on delivery",
+        status: "Awaiting Approval",
+        statusHistory: [
+          {
+            status: "Awaiting Approval",
+            note: "Customer placed order with Cash on Delivery.",
+            createdAt,
+          },
+        ],
+        createdAt,
+        updatedAt: createdAt,
+      };
+
+      await addDoc(collection(db, "orders"), orderPayload);
+      
+      // Clear the cart after successful order
+      await clearCart();
+      
       alert("Order placed successfully! Pay on delivery.");
-      navigate("/orders"); // optional
+      navigate("/orders");
     } catch (error) {
       console.error("Error saving order:", error);
+      alert("Failed to place order. Please try again.");
+    } finally {
+      setPlacingOrder(false);
     }
   };
 
@@ -290,8 +381,12 @@ function Cart() {
               </div>
 
               {/* COD Button */}
-              <button className="checkout-btn" onClick={handleCOD}>
-                Place Order (Cash on Delivery)
+              <button 
+                className="checkout-btn" 
+                onClick={handleCOD}
+                disabled={placingOrder}
+              >
+                {placingOrder ? "Placing Order..." : "Place Order (Cash on Delivery)"}
               </button>
 
               {/* Online Payment Button */}
