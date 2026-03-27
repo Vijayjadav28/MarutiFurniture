@@ -7,7 +7,11 @@ import {
   deleteDoc,
   doc,
   updateDoc,
+<<<<<<< HEAD
   addDoc,
+=======
+  writeBatch,
+>>>>>>> d6ff612877c3cb87a3fe00a53e3688edf914bab6
 } from "firebase/firestore";
 import { db } from "../../libs/firebase";
 import { useAuth } from "../../Context/AuthContext";
@@ -17,19 +21,20 @@ import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
 import { BsArrowLeft } from "react-icons/bs";
 import "./Cart.css";
 import { useNavigate } from "react-router-dom";
-
+<<<<<<< HEAD
 import CheckoutModal from "../Orders/CheckoutModal"
-
+=======
 import CheckoutModal from "../Orders/CheckoutModal";
 import { computeOrderShipping, formatOrderCurrency } from "../../utils/orderUtils";
-
+>>>>>>> d6ff612877c3cb87a3fe00a53e3688edf914bab6
 
 function Cart() {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
-
-
+<<<<<<< HEAD
+=======
   const [checkoutOpen, setCheckoutOpen] = useState(false);
+>>>>>>> d6ff612877c3cb87a3fe00a53e3688edf914bab6
   const navigate = useNavigate();
   const { currentUser } = useAuth();
 
@@ -99,6 +104,7 @@ function Cart() {
     }
   };
 
+<<<<<<< HEAD
   // 🔹 Cash on Delivery
   const handleCOD = async () => {
     try {
@@ -194,6 +200,7 @@ function Cart() {
     }
 
     setCheckoutOpen(true);
+>>>>>>> d6ff612877c3cb87a3fe00a53e3688edf914bab6
   };
 
   return (
@@ -325,13 +332,14 @@ function Cart() {
                 </span>
               </div>
 
-
+<<<<<<< HEAD
               {/* COD Button */}
               <button className="checkout-btn" onClick={handleCOD}>
                 Place Order (Cash on Delivery)
+=======
               <button className="checkout-btn" onClick={openCheckout}>
                 Proceed to checkout
-
+>>>>>>> d6ff612877c3cb87a3fe00a53e3688edf914bab6
               </button>
 
               <p className="checkout-helper">
