@@ -1,15 +1,16 @@
-import { useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   FiArrowRight,
-  FiCheck,
-  FiClock,
-  FiLayers,
-  FiMapPin,
   FiTrendingUp,
+  FiLayers,
+  FiClock,
+  FiMapPin,
+  FiCheck,
 } from "react-icons/fi";
 import { FaStar } from "react-icons/fa";
 import { ToastContainer, toast } from "react-toastify";
+import { useLocation } from "react-router-dom";
 import "./Home.css";
 import {
   calculateEstimate,
@@ -102,114 +103,56 @@ function Home() {
   useEffect(() => {
     if (msg.state?.loginSuccess) {
       toast.success("Login successful!");
-      window.history.replaceState({}, document.title, msg.pathname);
+      window.history.replaceState({}, document.title);
     }
-  }, [msg.pathname, msg.state]);
+  }, [msg.state]);
 
   return (
     <div className="home-container">
       <ToastContainer />
 
+      {/* Hero Section */}
       <section className="hero-section">
-        <div className="hero-glow hero-glow-one" />
-        <div className="hero-glow hero-glow-two" />
-
-        <div className="section-container hero-shell">
-          <div className="hero-copy">
-            <span className="section-eyebrow">Custom furniture for modern homes</span>
-            <h1>
-              Crafted furniture that turns blank rooms into warm, finished
-              spaces.
-            </h1>
-            <p>
-              From signature sofas to full-home interiors, we design, build,
-              and install furniture that fits your family, your floor plan, and
-              your everyday life.
-            </p>
-
-            <div className="hero-actions">
-              <button
-                type="button"
-                className="primary-button"
-                onClick={() => navigate("/products")}
-              >
-                Explore Products <FiArrowRight />
-              </button>
-              <button
-                type="button"
-                className="secondary-button"
-                onClick={() => navigate("/cost-estimator")}
-              >
-                Estimate My Budget <FiTrendingUp />
-              </button>
-            </div>
-
-            <div className="hero-stats">
-              {heroStats.map((item) => (
-                <article key={item.label} className="hero-stat-card">
-                  <strong>{item.value}</strong>
-                  <span>{item.label}</span>
-                </article>
-              ))}
-            </div>
-          </div>
-
-          <div className="hero-visual">
-            <div className="hero-image-card">
-              <img src="/shop.jpg" alt="Maruti Furniture showroom" />
-              <div className="hero-image-badge">
-                <span>Full-home planning</span>
-                <strong>{sampleEstimate.weekRange}</strong>
-              </div>
-              <div className="hero-image-overlay">
-                <span>Rajkot design studio</span>
-                <h3>
-                  From consultation to final fitting, everything stays
-                  coordinated.
-                </h3>
-              </div>
-            </div>
-
-            <div className="hero-support-grid">
-              <article className="hero-support-card hero-estimate-card">
-                <span>New estimator</span>
-                <h4>40 x 30 ft family home</h4>
-                <p>
-                  {formatCurrency(sampleEstimate.estimatedLow)} to{" "}
-                  {formatCurrency(sampleEstimate.estimatedHigh)}
-                </p>
-                <small>Expected timeline: {sampleEstimate.weekRange}</small>
-              </article>
-
-              <article className="hero-support-card hero-quality-card">
-                <FiLayers />
-                <div>
-                  <strong>Material-led planning</strong>
-                  <span>
-                    Compare comfort, premium, and luxury finishes side by side.
-                  </span>
-                </div>
-              </article>
-            </div>
+        <div className="hero-content">
+          <h1>Maruti Furniture</h1>
+          <p>Crafting Comfort, Delivering Style</p>
+          <div className="hero-buttons">
+            <button className="btn-primary" onClick={() => navigate("/products")}>
+              Explore Products <FiArrowRight />
+            </button>
+            <button className="btn-secondary" onClick={() => navigate("/cost-estimator")}>
+              Estimate My Budget <FiTrendingUp />
+            </button>
           </div>
         </div>
       </section>
 
+      {/* Stats Section */}
+      <section className="stats-section">
+        <div className="section-container">
+          <div className="stats-grid">
+            {heroStats.map((item) => (
+              <div key={item.label} className="stat-card">
+                <strong>{item.value}</strong>
+                <span>{item.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Categories Section */}
       <section className="categories-section">
         <div className="section-container">
           <div className="section-header">
-            <span className="section-eyebrow">Featured collections</span>
-            <h2>Choose the room you want to upgrade first.</h2>
-            <p>
-              Browse our most requested furniture categories and jump straight
-              into the styles families ask us for most.
-            </p>
+            <h2>Our Popular Categories</h2>
+            <p>Discover our exquisite furniture collections</p>
           </div>
 
           <div className="category-grid">
-            {categories.map((cat) => (
+            {categories.map((cat, i) => (
               <div
-                key={cat.catid}
+                key={i}
                 className="category-card"
                 onClick={() =>
                   navigate(`/products/${cat.name}`, {
@@ -226,13 +169,12 @@ function Home() {
               >
                 <div className="category-image-container">
                   <img src={cat.img[0]} alt={cat.name} />
-                  <span className="category-chip">{cat.catid}</span>
-                  <div className="price-tag">From ₹{cat.price}</div>
+                  <div className="price-tag">₹{cat.price}</div>
                 </div>
                 <div className="category-details">
                   <h3>{cat.name}</h3>
                   <p>{cat.color}</p>
-                  <button type="button">
+                  <button>
                     View Collection <FiArrowRight />
                   </button>
                 </div>
@@ -242,6 +184,7 @@ function Home() {
         </div>
       </section>
 
+      {/* Planner Section */}
       <section className="planner-section">
         <div className="section-container planner-shell">
           <div className="planner-copy">
@@ -252,10 +195,8 @@ function Home() {
               furniture planning range, material-aware pricing, and a realistic
               execution timeline.
             </p>
-
             <button
-              type="button"
-              className="primary-button"
+              className="btn-primary"
               onClick={() => navigate("/cost-estimator")}
             >
               Open Cost Estimator <FiArrowRight />
@@ -264,35 +205,35 @@ function Home() {
 
           <div className="planner-grid">
             {plannerBenefits.map((item) => (
-              <article key={item.title} className="planner-card">
+              <div key={item.title} className="planner-card">
                 <div className="planner-card-icon">{item.icon}</div>
                 <h3>{item.title}</h3>
                 <p>{item.text}</p>
-              </article>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
+      {/* About Section */}
       <section className="about-section">
         <div className="section-container">
           <div className="about-image-container">
-            <img src="/sofa2.jpg" alt="Maruti Furniture living room design" />
+            <img src="/shop.jpg" alt="Maruti Furniture Showroom" />
             <div className="image-overlay">
               <p>Since 2010</p>
-              <h3>Designed around real family living</h3>
+              <h3>Our Showroom</h3>
             </div>
           </div>
 
           <div className="about-content">
-            <span className="section-eyebrow">Why Maruti Furniture</span>
             <h2>
-              We build pieces that feel <span>tailored</span>, not generic.
+              Welcome to <span>Maruti Furniture</span>
             </h2>
             <p>
-              Every home has different dimensions, routines, and priorities. We
-              combine thoughtful design, durable materials, and dependable
-              execution so your furniture looks good and works hard every day.
+              We create furniture that combines timeless design with exceptional
+              comfort. Each piece is crafted with attention to detail using only
+              the finest materials.
             </p>
 
             <ul className="features-list">
@@ -300,41 +241,34 @@ function Home() {
                 <FiCheck /> <span>Handcrafted by skilled artisans</span>
               </li>
               <li>
-                <FiCheck /> <span>Premium quality materials and hardware</span>
+                <FiCheck /> <span>Premium quality materials</span>
               </li>
               <li>
-                <FiCheck /> <span>Customization for layout, finish, and storage</span>
+                <FiCheck /> <span>Customization options available</span>
               </li>
               <li>
-                <FiCheck /> <span>Design guidance before final execution</span>
+                <FiCheck /> <span>Free design consultation</span>
               </li>
             </ul>
 
-            <button
-              type="button"
-              className="primary-button"
-              onClick={() => navigate("/products")}
-            >
+            <button onClick={() => navigate("/products")}>
               Explore Our Products <FiArrowRight />
             </button>
           </div>
         </div>
       </section>
 
+      {/* Testimonials Section */}
       <section className="testimonials-section">
         <div className="section-container">
           <div className="section-header">
-            <span className="section-eyebrow">Client voices</span>
-            <h2>What our customers say after delivery.</h2>
-            <p>
-              Families come to us for craftsmanship, and they stay with us for
-              the planning support and execution experience.
-            </p>
+            <h2>What Our Customers Say</h2>
+            <p>Hear from our satisfied clients</p>
           </div>
 
           <div className="testimonial-grid">
             {testimonials.map((item) => (
-              <article key={`${item.name}-${item.place}`} className="testimonial-card">
+              <div key={`${item.name}-${item.place}`} className="testimonial-card">
                 <div className="rating">
                   <FaStar />
                   <FaStar />
@@ -347,27 +281,20 @@ function Home() {
                   <h4>{item.name}</h4>
                   <p>{item.place}</p>
                 </div>
-              </article>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
+      {/* CTA Section */}
       <section className="cta-section">
-        <div className="section-container cta-shell">
-          <div className="cta-copy">
-            <span className="section-eyebrow">Let&apos;s build your space</span>
-            <h2>Visit the showroom or start with a budget plan today.</h2>
-            <p>
-              See materials in person, talk through your layout, or use the new
-              estimator to plan the next step with more confidence.
-            </p>
-          </div>
-
-          <div className="cta-actions">
+        <div className="cta-content">
+          <h2>Ready to Transform Your Space?</h2>
+          <p>Visit our showroom to experience the quality firsthand</p>
+          <div className="cta-buttons">
             <button
-              type="button"
-              className="primary-button button-light"
+              className="btn-light"
               onClick={() =>
                 window.open("https://maps.app.goo.gl/kpcfXLsf3TcmB7cu5", "_blank")
               }
@@ -375,8 +302,7 @@ function Home() {
               Get Directions <FiMapPin />
             </button>
             <button
-              type="button"
-              className="secondary-button button-light-outline"
+              className="btn-outline-light"
               onClick={() => navigate("/cost-estimator")}
             >
               Try Cost Estimator <FiTrendingUp />

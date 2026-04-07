@@ -8,8 +8,10 @@ import {
   buildAddressText,
   formatOrderCurrency,
   formatOrderDate,
+  getLocalOrders,
   getOrderStatusTone,
   getStatusSteps,
+  isPermissionDeniedError,
   normalizeOrderData,
 } from "../../utils/orderUtils";
 import "./OrdersPage.css";
@@ -19,6 +21,7 @@ function OrdersPage() {
   const { currentUser } = useAuth();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [ordersNotice, setOrdersNotice] = useState("");
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -26,27 +29,43 @@ function OrdersPage() {
 
   useEffect(() => {
     const fetchOrders = async () => {
-      if (!currentUser) return;
+      if (!currentUser) {
+        setOrders([]);
+        setLoading(false);
+        setOrdersNotice("");
+        return;
+      }
 
       setLoading(true);
+      const localOrders = getLocalOrders(currentUser.uid);
+
       try {
         const ordersQuery = query(
           collection(db, "orders"),
-          where("userId", "==", currentUser.uid),
+          where("userId", "==", currentUser.uid)
         );
         const snapshot = await getDocs(ordersQuery);
-        const list = snapshot.docs
+        const firebaseOrders = snapshot.docs
           .map((orderDoc) =>
-            normalizeOrderData({ id: orderDoc.id, ...orderDoc.data() }),
-          )
-          .sort(
-            (a, b) =>
-              (b.createdAt?.getTime() || 0) - (a.createdAt?.getTime() || 0),
+            normalizeOrderData({ id: orderDoc.id, ...orderDoc.data() })
           );
+        const list = [...firebaseOrders, ...localOrders]
+          .sort((a, b) => (b.createdAt?.getTime() || 0) - (a.createdAt?.getTime() || 0));
 
         setOrders(list);
+        setOrdersNotice(
+          localOrders.length
+            ? "Some orders on this page are stored locally on this device until Firebase syncing is enabled."
+            : ""
+        );
       } catch (error) {
         console.error("Failed to fetch orders:", error);
+        setOrders(localOrders);
+        setOrdersNotice(
+          isPermissionDeniedError(error)
+            ? "Firebase order access is still locked, so you are seeing demo orders saved on this device."
+            : "We could not load Firebase orders right now. Showing any locally saved demo orders instead."
+        );
       } finally {
         setLoading(false);
       }
@@ -58,9 +77,8 @@ function OrdersPage() {
   const stats = useMemo(() => {
     return {
       total: orders.length,
-      active: orders.filter(
-        (order) => !["Delivered", "Cancelled"].includes(order.status),
-      ).length,
+      active: orders.filter((order) => !["Delivered", "Cancelled"].includes(order.status))
+        .length,
       delivered: orders.filter((order) => order.status === "Delivered").length,
     };
   }, [orders]);
@@ -80,8 +98,8 @@ function OrdersPage() {
       <header className="orders-hero">
         <div className="orders-shell">
           <p className="orders-hero__eyebrow">Order tracking</p>
-          <h1>Track Order</h1>
-          <p className="orders-hero__sub"> 
+          <h1>Track every order, address, and delivery status in one place.</h1>
+          <p className="orders-hero__sub">
             Follow progress from approval to shipping and delivery with a
             cleaner customer experience.
           </p>
@@ -104,6 +122,10 @@ function OrdersPage() {
       </header>
 
       <div className="orders-shell orders-content">
+        {ordersNotice ? (
+          <div className="orders-note">{ordersNotice}</div>
+        ) : null}
+
         {orders.length === 0 ? (
           <div className="orders-empty">
             <FiPackage />
@@ -129,9 +151,16 @@ function OrdersPage() {
                       <p className="order-card__eyebrow">Order number</p>
                       <h2>{order.orderNumber}</h2>
                     </div>
-                    <span className={`order-status-chip ${tone}`}>
-                      {order.status}
-                    </span>
+                    <div className="order-card__head-meta">
+                      {order.storageSource === "local" ? (
+                        <span className="order-source-chip">
+                          Saved on this device
+                        </span>
+                      ) : null}
+                      <span className={`order-status-chip ${tone}`}>
+                        {order.status}
+                      </span>
+                    </div>
                   </div>
 
                   <div className="order-meta-grid">
@@ -155,10 +184,7 @@ function OrdersPage() {
 
                   <div className="order-items-list">
                     {order.items.map((line, index) => (
-                      <div
-                        key={`${order.id}-${index}`}
-                        className="order-item-row"
-                      >
+                      <div key={`${order.id}-${index}`} className="order-item-row">
                         <div className="order-item-row__image">
                           {line.image ? (
                             <img src={line.image} alt={line.name} />
@@ -169,8 +195,7 @@ function OrdersPage() {
                         <div>
                           <strong>{line.name}</strong>
                           <span>
-                            Qty {line.quantity} •{" "}
-                            {formatOrderCurrency(line.price)}
+                            Qty {line.quantity} • {formatOrderCurrency(line.price)}
                           </span>
                         </div>
                       </div>
@@ -193,8 +218,8 @@ function OrdersPage() {
                           step.current
                             ? "order-timeline__step current"
                             : step.done
-                              ? "order-timeline__step done"
-                              : "order-timeline__step"
+                            ? "order-timeline__step done"
+                            : "order-timeline__step"
                         }
                       >
                         <div className="order-timeline__dot" />

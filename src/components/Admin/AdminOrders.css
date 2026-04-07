@@ -21,12 +21,11 @@
 .admin-orders-header__eyebrow,
 .admin-order-card__eyebrow {
   margin: 0 0 0.45rem;
+  color: #5f7065;
+  font-size: 0.74rem;
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  font-size: 20px;
-
-  color: white;
 }
 
 .admin-orders-header h1 {
@@ -65,6 +64,16 @@
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 1rem;
   margin-bottom: 1.6rem;
+}
+
+.admin-orders-note {
+  margin-bottom: 1rem;
+  padding: 1rem 1.1rem;
+  border-radius: 1.15rem;
+  background: #edf8fc;
+  border: 1px solid #c7e6f0;
+  color: #15566d;
+  line-height: 1.65;
 }
 
 .admin-orders-stats article,
@@ -126,6 +135,14 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: 1rem;
+}
+
+.admin-order-card__head-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.7rem;
 }
 
 .admin-order-card__head h2 {
@@ -245,6 +262,18 @@
   font-size: 0.82rem;
 }
 
+.admin-order-source {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  background: #edf8fc;
+  color: #15566d;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
 .admin-order-status.warning {
   background: #fff6de;
   color: #996f00;
@@ -282,5 +311,9 @@
   .admin-order-card__head {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .admin-order-card__head-meta {
+    justify-content: flex-start;
   }
 }

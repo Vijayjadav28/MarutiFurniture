@@ -31,6 +31,8 @@ export const DEFAULT_ADDRESS = {
   landmark: "",
 };
 
+const LOCAL_ORDER_STORAGE_KEY = "marutiFurniture.demoOrders";
+
 const currencyFormatter = new Intl.NumberFormat("en-IN", {
   style: "currency",
   currency: "INR",
@@ -79,6 +81,13 @@ export function buildAddressText(address = {}) {
   ]
     .filter(Boolean)
     .join(", ");
+}
+
+export function isPermissionDeniedError(error) {
+  return (
+    error?.code === "permission-denied" ||
+    /Missing or insufficient permissions/i.test(error?.message || "")
+  );
 }
 
 export function getOrderStatusTone(status) {
@@ -131,5 +140,109 @@ export function normalizeOrderData(order = {}) {
     paymentMethod: order.paymentMethod || "Cash on Delivery",
     paymentStatus: order.paymentStatus || "Pending",
     status: order.status || "Awaiting Approval",
+    storageSource: order.storageSource || "firebase",
+    syncLabel:
+      order.storageSource === "local"
+        ? "Saved on this device"
+        : "Synced with Firebase",
   };
+}
+
+function canUseLocalStorage() {
+  return typeof window !== "undefined" && Boolean(window.localStorage);
+}
+
+function serializeDate(value) {
+  const normalizedDate = toDate(value);
+  return normalizedDate ? normalizedDate.toISOString() : null;
+}
+
+function readStoredOrders() {
+  if (!canUseLocalStorage()) return [];
+
+  try {
+    const raw = window.localStorage.getItem(LOCAL_ORDER_STORAGE_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (error) {
+    console.error("Failed to read local demo orders:", error);
+    return [];
+  }
+}
+
+function writeStoredOrders(orders) {
+  if (!canUseLocalStorage()) return;
+
+  try {
+    window.localStorage.setItem(LOCAL_ORDER_STORAGE_KEY, JSON.stringify(orders));
+  } catch (error) {
+    console.error("Failed to write local demo orders:", error);
+  }
+}
+
+function serializeOrder(order = {}) {
+  return {
+    ...order,
+    createdAt: serializeDate(order.createdAt),
+    updatedAt: serializeDate(order.updatedAt),
+    storageSource: "local",
+    statusHistory: Array.isArray(order.statusHistory)
+      ? order.statusHistory.map((entry) => ({
+          ...entry,
+          createdAt: serializeDate(entry.createdAt),
+        }))
+      : [],
+  };
+}
+
+export function saveLocalOrder(order = {}) {
+  const currentOrders = readStoredOrders();
+  const localOrder = serializeOrder({
+    ...order,
+    id:
+      order.id ||
+      `local-${Date.now()}-${Math.floor(Math.random() * 900 + 100)}`,
+  });
+
+  writeStoredOrders([localOrder, ...currentOrders]);
+  return normalizeOrderData(localOrder);
+}
+
+export function getLocalOrders(userId = "") {
+  return readStoredOrders()
+    .filter((order) => !userId || order.userId === userId)
+    .map((order) => normalizeOrderData(order));
+}
+
+export function updateLocalOrderStatus(orderId, nextStatus) {
+  const currentOrders = readStoredOrders();
+  let updatedOrder = null;
+
+  const nextOrders = currentOrders.map((order) => {
+    if (order.id !== orderId) return order;
+
+    const statusHistory = Array.isArray(order.statusHistory)
+      ? [...order.statusHistory]
+      : [];
+
+    const nextOrder = {
+      ...order,
+      status: nextStatus,
+      updatedAt: new Date().toISOString(),
+      statusHistory: [
+        ...statusHistory,
+        {
+          status: nextStatus,
+          note: `Admin changed demo order to ${nextStatus}.`,
+          createdAt: new Date().toISOString(),
+        },
+      ],
+    };
+
+    updatedOrder = normalizeOrderData(nextOrder);
+    return nextOrder;
+  });
+
+  writeStoredOrders(nextOrders);
+  return updatedOrder;
 }

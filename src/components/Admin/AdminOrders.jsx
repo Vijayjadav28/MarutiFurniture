@@ -9,8 +9,11 @@ import {
   buildAddressText,
   formatOrderCurrency,
   formatOrderDate,
+  getLocalOrders,
   getOrderStatusTone,
+  isPermissionDeniedError,
   normalizeOrderData,
+  updateLocalOrderStatus,
 } from "../../utils/orderUtils";
 import "./AdminOrders.css";
 
@@ -25,6 +28,7 @@ function AdminOrders() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState("");
+  const [ordersNotice, setOrdersNotice] = useState("");
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -44,17 +48,31 @@ function AdminOrders() {
   useEffect(() => {
     const fetchOrders = async () => {
       setLoading(true);
+      const localOrders = getLocalOrders();
+
       try {
         const snapshot = await getDocs(collection(db, "orders"));
-        const list = snapshot.docs
+        const firebaseOrders = snapshot.docs
           .map((orderDoc) =>
             normalizeOrderData({ id: orderDoc.id, ...orderDoc.data() })
-          )
+          );
+        const list = [...firebaseOrders, ...localOrders]
           .sort((a, b) => (b.createdAt?.getTime() || 0) - (a.createdAt?.getTime() || 0));
 
         setOrders(list);
+        setOrdersNotice(
+          localOrders.length
+            ? "Some demo orders are stored only on this device until Firebase syncing is enabled."
+            : ""
+        );
       } catch (error) {
         console.error("Failed to load admin orders:", error);
+        setOrders(localOrders);
+        setOrdersNotice(
+          isPermissionDeniedError(error)
+            ? "Firebase admin access is locked, so only device-saved demo orders are available here."
+            : "Firebase orders could not be loaded right now. Showing locally saved demo orders instead."
+        );
       } finally {
         setLoading(false);
       }
@@ -75,6 +93,19 @@ function AdminOrders() {
   const handleStatusChange = async (order, nextStatus) => {
     setUpdatingId(order.id);
     try {
+      if (order.storageSource === "local") {
+        const updatedOrder = updateLocalOrderStatus(order.id, nextStatus);
+
+        setOrders((currentOrders) =>
+          currentOrders.map((currentOrder) =>
+            currentOrder.id === order.id && updatedOrder
+              ? updatedOrder
+              : currentOrder
+          )
+        );
+        return;
+      }
+
       await updateDoc(doc(db, "orders", order.id), {
         status: nextStatus,
         updatedAt: new Date(),
@@ -104,9 +135,12 @@ function AdminOrders() {
       <div className="admin-orders-shell">
         <div className="admin-orders-header">
           <div>
-            <p className="admin-orders-header__eyebrow">Admin orders</p>
+            <p className="admin-orders-header__eyebrow">Admin order control</p>
             <h1>Track, approve, ship, and deliver customer orders.</h1>
-          
+            <p>
+              Update every order status from one place while keeping customer
+              tracking in sync.
+            </p>
           </div>
 
           <button type="button" onClick={() => navigate("/profile/admin/admindashboard")}>
@@ -133,6 +167,10 @@ function AdminOrders() {
           </article>
         </div>
 
+        {ordersNotice ? (
+          <div className="admin-orders-note">{ordersNotice}</div>
+        ) : null}
+
         {loading ? (
           <div className="admin-orders-loading">Loading orders...</div>
         ) : orders.length === 0 ? (
@@ -153,9 +191,16 @@ function AdminOrders() {
                       <p className="admin-order-card__eyebrow">Order number</p>
                       <h2>{order.orderNumber}</h2>
                     </div>
-                    <span className={`admin-order-status ${tone}`}>
-                      {order.status}
-                    </span>
+                    <div className="admin-order-card__head-meta">
+                      {order.storageSource === "local" ? (
+                        <span className="admin-order-source">
+                          Device-only demo order
+                        </span>
+                      ) : null}
+                      <span className={`admin-order-status ${tone}`}>
+                        {order.status}
+                      </span>
+                    </div>
                   </div>
 
                   <div className="admin-order-grid">

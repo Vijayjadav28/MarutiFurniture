@@ -7,36 +7,26 @@ import {
   deleteDoc,
   doc,
   updateDoc,
-<<<<<<< HEAD
-  addDoc,
-=======
   writeBatch,
->>>>>>> d6ff612877c3cb87a3fe00a53e3688edf914bab6
 } from "firebase/firestore";
 import { db } from "../../libs/firebase";
 import { useAuth } from "../../Context/AuthContext";
 import { IoCloseOutline } from "react-icons/io5";
-import { FiShoppingBag } from "react-icons/fi";
+import { FiPackage, FiShoppingBag, FiShield, FiTruck } from "react-icons/fi";
 import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
 import { BsArrowLeft } from "react-icons/bs";
 import "./Cart.css";
 import { useNavigate } from "react-router-dom";
-<<<<<<< HEAD
-import CheckoutModal from "../Orders/CheckoutModal"
-=======
 import CheckoutModal from "../Orders/CheckoutModal";
 import { computeOrderShipping, formatOrderCurrency } from "../../utils/orderUtils";
->>>>>>> d6ff612877c3cb87a3fe00a53e3688edf914bab6
 
 function Cart() {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
-<<<<<<< HEAD
-=======
   const [checkoutOpen, setCheckoutOpen] = useState(false);
->>>>>>> d6ff612877c3cb87a3fe00a53e3688edf914bab6
   const navigate = useNavigate();
   const { currentUser } = useAuth();
+  const freeShippingThreshold = 50000;
 
   const calculateTotalItems = () => {
     return cartItems.reduce((total, item) => total + item.quantity, 0);
@@ -52,6 +42,12 @@ function Cart() {
   const calculateShipping = (subtotal) => {
     return computeOrderShipping(subtotal);
   };
+
+  const subtotal = calculateSubtotal();
+  const shipping = calculateShipping(subtotal);
+  const total = subtotal + shipping;
+  const totalItems = calculateTotalItems();
+  const remainingForFreeShipping = Math.max(0, freeShippingThreshold - subtotal);
 
   const fetchCart = useCallback(async () => {
     try {
@@ -104,74 +100,6 @@ function Cart() {
     }
   };
 
-<<<<<<< HEAD
-  // 🔹 Cash on Delivery
-  const handleCOD = async () => {
-    try {
-      await addDoc(collection(db, "orders"), {
-        userId: currentUser.uid,
-        items: cartItems,
-        subtotal: calculateSubtotal(),
-        shipping: calculateShipping(calculateSubtotal()),
-        total:
-          calculateSubtotal() + calculateShipping(calculateSubtotal()),
-        paymentMethod: "Cash on Delivery",
-        status: "Pending",
-        createdAt: new Date(),
-      });
-      alert("Order placed successfully! Pay on delivery.");
-      navigate("/orders"); // optional
-    } catch (error) {
-      console.error("Error saving order:", error);
-    }
-  };
-
-  // 🔹 Online Payment with Razorpay
-  const handlePayment = async () => {
-    try {
-      const res = await fetch("http://localhost:5000/create-order", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          amount:
-            calculateSubtotal() + calculateShipping(calculateSubtotal()),
-        }),
-      });
-
-      const order = await res.json();
-
-      const options = {
-        key: "YOUR_KEY_ID", // Replace with Razorpay key
-        amount: order.amount,
-        currency: "INR",
-        name: "Maruti Furniture",
-        description: "Furniture Purchase",
-        order_id: order.id,
-        handler: async function (response) {
-          await addDoc(collection(db, "payments"), {
-            userId: currentUser.uid,
-            items: cartItems,
-            amount: order.amount / 100,
-            paymentId: response.razorpay_payment_id,
-            status: "success",
-            createdAt: new Date(),
-          });
-          alert("Payment successful!");
-          navigate("/orders");
-        },
-        prefill: {
-          name: currentUser?.displayName || "Customer",
-          email: currentUser?.email || "test@example.com",
-        },
-        theme: { color: "#28a745" },
-      };
-
-      const rzp = new window.Razorpay(options);
-      rzp.open();
-    } catch (error) {
-      console.error("Payment error:", error);
-    }
-=======
   // Clear cart after successful order
   const clearCart = async () => {
     try {
@@ -200,26 +128,68 @@ function Cart() {
     }
 
     setCheckoutOpen(true);
->>>>>>> d6ff612877c3cb87a3fe00a53e3688edf914bab6
   };
 
   return (
     <div className="cart-page">
       <div className="cart-container">
-        <div className="cart-header">
-          <button className="back-button" onClick={() => navigate("/products")}>
-            <BsArrowLeft /> Continue Shopping
-          </button>
-          <h2>Your Shopping Cart</h2>
-          <div className="cart-summary-mobile">
-            {cartItems.length > 0 && (
-              <span>
-                {calculateTotalItems()}{" "}
-                {calculateTotalItems() === 1 ? "item" : "items"}
-              </span>
-            )}
+        <section className="cart-hero">
+          <div className="cart-hero__copy">
+            <p className="cart-hero__eyebrow">Studio checkout</p>
+            <h1>Review your pieces before delivery.</h1>
+            <p>
+              Refine quantities, lock in free shipping, and move into a calmer
+              two-step checkout designed for large furniture orders.
+            </p>
+
+            <div className="cart-hero__actions">
+              <button
+                className="back-button"
+                onClick={() => navigate("/products")}
+              >
+                <BsArrowLeft /> Continue Shopping
+              </button>
+
+              <div className="cart-summary-mobile">
+                {cartItems.length > 0 && (
+                  <span>
+                    {totalItems} {totalItems === 1 ? "item" : "items"}
+                  </span>
+                )}
+              </div>
+            </div>
           </div>
-        </div>
+
+          <div className="cart-hero__stats">
+            <article>
+              <span>Selected items</span>
+              <strong>{totalItems}</strong>
+              <p>Curated for one delivery schedule</p>
+            </article>
+            <article>
+              <span>Current subtotal</span>
+              <strong>{formatOrderCurrency(subtotal)}</strong>
+              <p>Inclusive of all selected quantities</p>
+            </article>
+            <article>
+              <span>Delivery status</span>
+              <strong>
+                {cartItems.length === 0
+                  ? "No items yet"
+                  : shipping === 0
+                  ? "Free shipping"
+                  : "Shipping applies"}
+              </strong>
+              <p>
+                {cartItems.length === 0
+                  ? "Add pieces to see delivery and checkout details."
+                  : shipping === 0
+                  ? "You unlocked complimentary delivery."
+                  : `${formatOrderCurrency(remainingForFreeShipping)} away from free shipping.`}
+              </p>
+            </article>
+          </div>
+        </section>
 
         {loading ? (
           <div className="loading-spinner">Loading...</div>
@@ -238,6 +208,16 @@ function Cart() {
         ) : (
           <div className="cart-content">
             <div className="cart-items">
+              <div className="cart-panel-header">
+                <div>
+                  <p className="cart-panel-header__eyebrow">Selected pieces</p>
+                  <h2>Your shopping cart</h2>
+                </div>
+                <span className="cart-panel-badge">
+                  {totalItems} {totalItems === 1 ? "item" : "items"}
+                </span>
+              </div>
+
               <div className="cart-table-header">
                 <div className="header-product">Product</div>
                 <div className="header-price">Price</div>
@@ -257,18 +237,26 @@ function Cart() {
                     }
                   >
                     <div className="product-image">
-                   <img src={item.img[0]} alt={item.name} />
-
+                      {item.img?.[0] ? (
+                        <img src={item.img[0]} alt={item.name} />
+                      ) : (
+                        <div className="product-image__placeholder">
+                          <FiPackage />
+                        </div>
+                      )}
                     </div>
                     <div className="product-details">
                       <h4>{item.name}</h4>
                       <p>{item.catid}</p>
+                      <span>{item.color || "Custom finish available"}</span>
                     </div>
                   </div>
                   <div className="product-price">
-                    ₹{item.price.toLocaleString("en-IN")}
+                    <span className="product-mobile-label">Price</span>
+                    {formatOrderCurrency(item.price)}
                   </div>
                   <div className="product-quantity">
+                    <span className="product-mobile-label">Quantity</span>
                     <button
                       onClick={() =>
                         handleQuantityChange(item.id, item.quantity - 1)
@@ -287,7 +275,8 @@ function Cart() {
                     </button>
                   </div>
                   <div className="product-total">
-                    ₹{(item.price * item.quantity).toLocaleString("en-IN")}
+                    <span className="product-mobile-label">Total</span>
+                    {formatOrderCurrency(item.price * item.quantity)}
                   </div>
                   <div className="product-remove">
                     <button onClick={() => handleRemove(item.id)}>
@@ -299,52 +288,58 @@ function Cart() {
             </div>
 
             <div className="cart-summary">
-              <h3>Order Summary</h3>
+              <p className="cart-summary__eyebrow">Order summary</p>
+              <h3>Everything ready for checkout</h3>
+              <p className="cart-summary__copy">
+                Confirm totals, choose your payment flow, and place the order
+                with address details in one polished pass.
+              </p>
+
               <div className="summary-row">
                 <span>
-                  Subtotal ({calculateTotalItems()}{" "}
-                  {calculateTotalItems() === 1 ? "item" : "items"})
+                  Subtotal ({totalItems} {totalItems === 1 ? "item" : "items"})
                 </span>
-                <span>{formatOrderCurrency(calculateSubtotal())}</span>
+                <span>{formatOrderCurrency(subtotal)}</span>
               </div>
               <div className="summary-row">
                 <span>Shipping</span>
                 <span>
-                  {calculateSubtotal() >= 50000 ? (
+                  {shipping === 0 ? (
                     <span className="free-shipping">FREE</span>
                   ) : (
-                    formatOrderCurrency(calculateShipping(calculateSubtotal()))
+                    formatOrderCurrency(shipping)
                   )}
                 </span>
               </div>
-              {calculateSubtotal() < 50000 && (
+              {shipping !== 0 && (
                 <div className="shipping-notice">
-                  Add ₹{(50000 - calculateSubtotal()).toLocaleString("en-IN")}{" "}
-                  more to get FREE shipping
+                  Add {formatOrderCurrency(remainingForFreeShipping)} more to
+                  unlock complimentary delivery.
                 </div>
               )}
               <div className="summary-row total">
                 <span>Total</span>
-                <span>
-                  {formatOrderCurrency(
-                    calculateSubtotal() + calculateShipping(calculateSubtotal())
-                  )}
-                </span>
+                <span>{formatOrderCurrency(total)}</span>
               </div>
 
-<<<<<<< HEAD
-              {/* COD Button */}
-              <button className="checkout-btn" onClick={handleCOD}>
-                Place Order (Cash on Delivery)
-=======
               <button className="checkout-btn" onClick={openCheckout}>
                 Proceed to checkout
->>>>>>> d6ff612877c3cb87a3fe00a53e3688edf914bab6
               </button>
 
               <p className="checkout-helper">
                 Choose Cash on Delivery or Demo Online Card in the next step.
               </p>
+
+              <div className="cart-summary__assurance">
+                <div>
+                  <FiTruck />
+                  <span>White-glove delivery coordination for larger orders.</span>
+                </div>
+                <div>
+                  <FiShield />
+                  <span>Safe demo checkout even if Firebase is still being configured.</span>
+                </div>
+              </div>
 
               <div className="payment-methods">
                 <p>We accept:</p>

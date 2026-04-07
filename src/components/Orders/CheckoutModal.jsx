@@ -6,6 +6,7 @@ import {
   FiCreditCard,
   FiMapPin,
   FiPackage,
+  FiShield,
   FiTruck,
   FiX,
 } from "react-icons/fi";
@@ -20,19 +21,10 @@ import {
   createOrderNumber,
   formatOrderCurrency,
   hasCompleteAddress,
+  isPermissionDeniedError,
+  saveLocalOrder,
 } from "../../utils/orderUtils";
 import "./CheckoutModal.css";
-
-function formatCheckoutError(error) {
-  if (
-    error?.code === "permission-denied" ||
-    /Missing or insufficient permissions/i.test(error?.message || "")
-  ) {
-    return "Order creation is blocked by the current Firestore rules. Deploy the updated rules and try again.";
-  }
-
-  return "Failed to place order. Please try again.";
-}
 
 function CheckoutModal({
   isOpen,
@@ -50,6 +42,7 @@ function CheckoutModal({
   const [address, setAddress] = useState(DEFAULT_ADDRESS);
   const [paymentMethod, setPaymentMethod] = useState("cod");
   const [notice, setNotice] = useState("");
+  const [noticeTone, setNoticeTone] = useState("warning");
   const [demoCard, setDemoCard] = useState({
     cardHolder: "",
     cardNumber: "",
@@ -113,6 +106,17 @@ function CheckoutModal({
           .filter(Boolean)
           .join(" • ")
       : "Every item below will be included in one order.";
+  const isLocalDemoOrder = placedOrder?.storageSource === "local";
+
+  const showNotice = (message, tone = "warning") => {
+    setNotice(message);
+    setNoticeTone(tone);
+  };
+
+  const clearNotice = () => {
+    setNotice("");
+    setNoticeTone("warning");
+  };
 
   useEffect(() => {
     if (!isOpen) {
@@ -135,7 +139,7 @@ function CheckoutModal({
       setLoadingProfile(true);
       setStep("address");
       setPaymentMethod("cod");
-      setNotice("");
+      clearNotice();
       setPlacedOrder(null);
 
       try {
@@ -197,11 +201,11 @@ function CheckoutModal({
 
   const handleContinueToPayment = async () => {
     if (!hasCompleteAddress(address)) {
-      setNotice("Please complete the full delivery address before continuing.");
+      showNotice("Please complete the full delivery address before continuing.");
       return;
     }
 
-    setNotice("");
+    clearNotice();
     setSubmitting(true);
     try {
       if (address.fullName && address.fullName !== currentUser.displayName) {
@@ -230,8 +234,33 @@ function CheckoutModal({
       setStep("payment");
     } catch (error) {
       console.error("Failed to save address:", error);
+      setEditingAddress(false);
+      setStep("payment");
+      showNotice(
+        isPermissionDeniedError(error)
+          ? "Firebase profile sync is not ready yet. Your address will still be used for this checkout."
+          : "We couldn't sync this address right now, but you can continue with the current details.",
+        "info"
+      );
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const completeCheckout = async (savedOrder) => {
+    setPlacedOrder({
+      storageSource: "firebase",
+      syncLabel: "Synced with Firebase",
+      ...savedOrder,
+    });
+    setStep("success");
+
+    if (typeof onOrderPlaced === "function") {
+      try {
+        await onOrderPlaced(savedOrder);
+      } catch (postOrderError) {
+        console.error("Post-order action failed:", postOrderError);
+      }
     }
   };
 
@@ -243,65 +272,62 @@ function CheckoutModal({
         demoCard.expiry.trim().length < 4 ||
         demoCard.cvv.trim().length < 3
       ) {
-        setNotice("Please complete the demo card details to simulate payment.");
+        showNotice("Please complete the demo card details to simulate payment.");
         return;
       }
     }
 
-    setNotice("");
+    clearNotice();
     setSubmitting(true);
 
-    try {
-      const orderStatus =
-        paymentMethod === "cod" ? "Awaiting Approval" : "Confirmed";
-      const paymentStatus =
-        paymentMethod === "cod" ? "Pending on delivery" : "Paid";
-      const createdAt = new Date();
+    const orderStatus =
+      paymentMethod === "cod" ? "Awaiting Approval" : "Confirmed";
+    const paymentStatus =
+      paymentMethod === "cod" ? "Pending on delivery" : "Paid";
+    const createdAt = new Date();
+    const orderPayload = {
+      orderNumber: createOrderNumber(),
+      userId: currentUser.uid,
+      userEmail: currentUser.email || "",
+      customerName: address.fullName,
+      customerPhone: address.phone,
+      shippingAddress: address,
+      items: checkoutItems,
+      subtotal,
+      shipping,
+      total,
+      paymentMethod:
+        paymentMethod === "cod" ? "Cash on Delivery" : "Demo Online Card",
+      paymentStatus,
+      status: orderStatus,
+      statusHistory: [
+        {
+          status: orderStatus,
+          note:
+            paymentMethod === "cod"
+              ? "Customer placed order with Cash on Delivery."
+              : "Demo online card payment completed successfully.",
+          createdAt,
+        },
+      ],
+      createdAt,
+      updatedAt: createdAt,
+    };
 
-      const orderPayload = {
-        orderNumber: createOrderNumber(),
-        userId: currentUser.uid,
-        userEmail: currentUser.email || "",
-        customerName: address.fullName,
-        customerPhone: address.phone,
-        shippingAddress: address,
-        items: checkoutItems,
-        subtotal,
-        shipping,
-        total,
-        paymentMethod:
-          paymentMethod === "cod" ? "Cash on Delivery" : "Demo Online Card",
-        paymentStatus,
-        status: orderStatus,
-        statusHistory: [
-          {
-            status: orderStatus,
-            note:
-              paymentMethod === "cod"
-                ? "Customer placed order with Cash on Delivery."
-                : "Demo online card payment completed successfully.",
-            createdAt,
-          },
-        ],
-        createdAt,
-        updatedAt: createdAt,
-      };
+    try {
 
       const orderRef = await addDoc(collection(db, "orders"), orderPayload);
-      const savedOrder = { id: orderRef.id, ...orderPayload };
-      setPlacedOrder(savedOrder);
-      setStep("success");
-
-      if (typeof onOrderPlaced === "function") {
-        try {
-          await onOrderPlaced(savedOrder);
-        } catch (postOrderError) {
-          console.error("Post-order action failed:", postOrderError);
-        }
-      }
+      await completeCheckout({ id: orderRef.id, ...orderPayload, storageSource: "firebase" });
     } catch (error) {
       console.error("Failed to place order:", error);
-      setNotice(formatCheckoutError(error));
+
+      if (isPermissionDeniedError(error)) {
+        const savedOrder = saveLocalOrder(orderPayload);
+        await completeCheckout(savedOrder);
+        return;
+      }
+
+      showNotice("Failed to place order. Please try again.");
     } finally {
       setSubmitting(false);
     }
@@ -329,6 +355,13 @@ function CheckoutModal({
         </button>
 
         <div className="checkout-modal__sidebar">
+          <div className="checkout-badge-row">
+            <span className="checkout-badge">Tailored checkout</span>
+            <span className="checkout-badge subtle">
+              {shipping === 0 ? "Free delivery unlocked" : "Delivery scheduled"}
+            </span>
+          </div>
+
           <div className="checkout-product-card">
             <div className="checkout-product-card__image-wrap">
               {primaryImage ? (
@@ -344,6 +377,17 @@ function CheckoutModal({
               <p className="checkout-eyebrow">Order summary</p>
               <h3>{sidebarTitle}</h3>
               <p className="checkout-product-meta">{sidebarMeta}</p>
+            </div>
+          </div>
+
+          <div className="checkout-promise-grid">
+            <div>
+              <FiTruck />
+              <span>Dedicated delivery coordination for larger furniture orders.</span>
+            </div>
+            <div>
+              <FiShield />
+              <span>Automatic local demo save if Firebase access is still locked.</span>
             </div>
           </div>
 
@@ -405,7 +449,9 @@ function CheckoutModal({
                 placing the order.
               </p>
 
-              {notice ? <div className="checkout-notice">{notice}</div> : null}
+              {notice ? (
+                <div className={`checkout-notice ${noticeTone}`}>{notice}</div>
+              ) : null}
 
               {loadingProfile ? (
                 <div className="checkout-loading">Loading address...</div>
@@ -529,7 +575,17 @@ function CheckoutModal({
                 the order in approval, while the demo card flow marks it paid.
               </p>
 
-              {notice ? <div className="checkout-notice">{notice}</div> : null}
+              <div className="checkout-mode-card">
+                <FiShield />
+                <span>
+                  If Firebase permissions are still pending, this order will be
+                  saved on this device so you can continue the demo flow.
+                </span>
+              </div>
+
+              {notice ? (
+                <div className={`checkout-notice ${noticeTone}`}>{notice}</div>
+              ) : null}
 
               <div className="payment-option-list">
                 {PAYMENT_OPTIONS.map((option) => (
@@ -631,10 +687,20 @@ function CheckoutModal({
               <p className="checkout-eyebrow">Order successful</p>
               <h2>Your order has been placed</h2>
               <p className="checkout-copy">
-                We created your order with a professional tracking flow. You
-                can now follow its progress, address, and payment details from
-                the orders page.
+                {isLocalDemoOrder
+                  ? "Firebase checkout is not live yet, so this order was saved on this device. You can still review it from the orders page on this browser."
+                  : "We created your order with a cleaner tracking flow. You can now follow status, payment details, and delivery progress from the orders page."}
               </p>
+
+              {isLocalDemoOrder ? (
+                <div className="checkout-local-note">
+                  <FiShield />
+                  <span>
+                    Demo mode active: this order is stored locally until
+                    Firebase rules are deployed.
+                  </span>
+                </div>
+              ) : null}
 
               <div className="checkout-success-card">
                 <div>
@@ -649,14 +715,19 @@ function CheckoutModal({
                   <span>Total paid</span>
                   <strong>{formatOrderCurrency(placedOrder.total)}</strong>
                 </div>
+                <div>
+                  <span>Saved as</span>
+                  <strong>{placedOrder.syncLabel}</strong>
+                </div>
               </div>
 
               <div className="checkout-success-notes">
                 <div>
                   <FiClock />
                   <span>
-                    Admin can now confirm, ship, and deliver this order from the
-                    dashboard.
+                    {isLocalDemoOrder
+                      ? "Once Firebase permissions are deployed, new orders can sync directly for admin tracking."
+                      : "Admin can now confirm, ship, and deliver this order from the dashboard."}
                   </span>
                 </div>
                 <div>
